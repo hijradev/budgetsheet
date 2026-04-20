@@ -100,13 +100,15 @@ function renderNav() {
   var nav = document.getElementById('app-nav');
   if (!nav) return;
   nav.innerHTML =
-    '<div class="nav-brand">' +
-      '<i class="ti ti-coin me-2"></i>' +
-      '<span class="nav-brand-text">BudgetSheet</span>' +
+    '<div class="nav-left">' +
+      '<button class="nav-hamburger" id="sidebar-toggle" aria-label="Toggle menu">' +
+        '<i class="ti ti-menu-2"></i>' +
+      '</button>' +
+      '<div class="nav-brand">' +
+        '<i class="ti ti-coin me-2"></i>' +
+        '<span class="nav-brand-text">BudgetSheet</span>' +
+      '</div>' +
     '</div>' +
-    '<button class="nav-hamburger" id="sidebar-toggle" aria-label="Toggle menu">' +
-      '<i class="ti ti-menu-2"></i>' +
-    '</button>' +
     '<div class="nav-actions">' +
       '<button class="btn btn-primary btn-sm" id="nav-add-transaksi-btn">' +
         '<i class="ti ti-plus"></i> <span class="btn-text">Tambah Transaksi</span>' +
