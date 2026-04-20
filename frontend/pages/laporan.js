@@ -77,10 +77,10 @@ function _buildTabelAnggaranLaporan(anggaranVsAktual) {
     var persen = a.jumlahAnggaran > 0 ? Math.round((a.realisasi / a.jumlahAnggaran) * 100) : 0;
     var barCls = persen >= 100 ? 'bg-danger' : persen >= 80 ? 'bg-warning' : 'bg-success';
     var statusBadge = persen >= 100
-      ? '<span class="badge bg-danger">Kritis</span>'
+      ? '<span class="badge badge-danger">Kritis</span>'
       : persen >= 80
-        ? '<span class="badge bg-warning text-dark">Peringatan</span>'
-        : '<span class="badge bg-success">Normal</span>';
+        ? '<span class="badge badge-warning">Peringatan</span>'
+        : '<span class="badge badge-success">Normal</span>';
     return '<tr>' +
       '<td>' + (a.kategoriNama || a.kategoriId || '—') + '</td>' +
       '<td>' + formatCurrency(a.jumlahAnggaran || 0) + '</td>' +
@@ -181,8 +181,8 @@ function _renderLaporanContent(data) {
         var pemasukan   = perPeriode.map(function(p) { return p.pemasukan || 0; });
         var pengeluaran = perPeriode.map(function(p) { return p.pengeluaran || 0; });
         renderBarChart('laporan-bar-chart', labels, [
-          { label: 'Pemasukan',   data: pemasukan,   backgroundColor: 'rgba(107,203,119,0.7)', borderColor: '#6BCB77' },
-          { label: 'Pengeluaran', data: pengeluaran, backgroundColor: 'rgba(239,108,108,0.7)', borderColor: '#EF6C6C' },
+          { label: 'Pemasukan',   data: pemasukan,   backgroundColor: 'rgba(107,203,119,0.7)', borderColor: '#276749' },
+          { label: 'Pengeluaran', data: pengeluaran, backgroundColor: 'rgba(239,108,108,0.7)', borderColor: '#9b2335' },
         ]);
       }
       // Pie chart
@@ -279,15 +279,15 @@ function renderLaporan() {
 
       // Filter card
       '<div class="glass-card p-3 mb-4" style="position:relative;z-index:200;overflow:visible;">' +
-        '<div class="d-flex flex-wrap gap-2 align-items-end">' +
+        '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;align-items:end;">' +
           '<div>' +
             '<label class="form-label mb-1 small">Periode</label>' +
-            '<div class="dropdown">' +
-              '<button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" ' +
-                'id="dropdown-periode" data-bs-toggle="dropdown" aria-expanded="false">' +
-                '<i class="ti ti-calendar me-1"></i>' + _laporanFilter.periode +
+            '<div class="dropdown" style="display:block;">' +
+              '<button class="btn btn-outline-secondary dropdown-toggle" type="button" ' +
+                'id="dropdown-periode" data-bs-toggle="dropdown" aria-expanded="false" style="width:100%;justify-content:space-between;padding:12.5px 14px;font-size:var(--font-small);">' +
+                '<span><i class="ti ti-calendar me-1"></i>' + _laporanFilter.periode + '</span>' +
               '</button>' +
-              '<ul class="dropdown-menu" aria-labelledby="dropdown-periode">' +
+              '<ul class="dropdown-menu" aria-labelledby="dropdown-periode" style="width:100%;">' +
                 dropdownItems +
               '</ul>' +
             '</div>' +
@@ -303,7 +303,8 @@ function renderLaporan() {
               'value="' + _laporanFilter.tanggalAkhir + '">' +
           '</div>' +
           '<div>' +
-            '<button class="btn btn-primary btn-sm" id="btn-tampilkan-laporan">' +
+            '<label class="form-label mb-1 small" style="visibility:hidden;">Filter</label>' +
+            '<button class="btn btn-primary" id="btn-tampilkan-laporan" style="width:100%;justify-content:center;padding:12.5px 14px;font-size:var(--font-small);">' +
               '<i class="ti ti-search me-1"></i>Tampilkan' +
             '</button>' +
           '</div>' +

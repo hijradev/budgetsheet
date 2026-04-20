@@ -34,10 +34,10 @@
       --font-heading: 24px;
       --font-small:   14px;
 
-      --color-success:    #6BCB77;
-      --color-warning:    #FFD166;
-      --color-danger:     #EF6C6C;
-      --color-info:       #74B9FF;
+      --color-success:    #00c853;
+      --color-warning:    #ffab00;
+      --color-danger:     #ff1744;
+      --color-info:       #00b0ff;
       --color-text:       #2d3748;
       --color-text-muted: #718096;
 
@@ -304,6 +304,18 @@
       background: rgba(239, 108, 108, 0.35);
     }
 
+    .btn-outline-secondary {
+      background: transparent;
+      border-color: var(--glass-border);
+      color: var(--color-text-muted);
+    }
+
+    .btn-outline-secondary:hover {
+      background: rgba(255, 255, 255, 0.35);
+      color: var(--color-text);
+      border-color: rgba(255, 255, 255, 0.6);
+    }
+
     .btn-sm {
       padding: 5px 12px;
       font-size: var(--font-small);
@@ -314,6 +326,12 @@
       cursor: not-allowed;
       transform: none;
     }
+
+    #trx-filter-btn {
+      padding: 11px 18px;
+    }
+
+
 
     /* ============================================================
        FORM ELEMENTS
@@ -486,17 +504,17 @@
       font-weight: 600;
     }
 
-    .badge-success { background: rgba(107, 203, 119, 0.2); color: #276749; }
-    .badge-warning { background: rgba(255, 209, 102, 0.25); color: #7d5a00; }
-    .badge-danger  { background: rgba(239, 108, 108, 0.2); color: #9b2335; }
-    .badge-info    { background: rgba(116, 185, 255, 0.2); color: #1a5276; }
+    .badge-success { background: rgba(107, 203, 119, 0.2); color: var(--color-success); }
+    .badge-warning { background: rgba(255, 209, 102, 0.25); color: var(--color-warning); }
+    .badge-danger  { background: rgba(239, 108, 108, 0.2); color: var(--color-danger); }
+    .badge-info    { background: rgba(116, 185, 255, 0.2); color: var(--color-info); }
     .badge-muted   { background: rgba(113, 128, 150, 0.15); color: var(--color-text-muted); }
 
     /* Badge light backgrounds for text colors */
-    .bg-success-lt.text-success { color: #276749; }
-    .bg-warning-lt.text-warning { color: #7d5a00; }
-    .bg-danger-lt.text-danger   { color: #9b2335; }
-    .bg-info-lt.text-info       { color: #1a5276; }
+    .bg-success-lt.text-success { color: var(--color-success); }
+    .bg-warning-lt.text-warning { color: var(--color-warning); }
+    .bg-danger-lt.text-danger   { color: var(--color-danger); }
+    .bg-info-lt.text-info       { color: var(--color-info); }
 
     /* ============================================================
        DROPDOWN (Bootstrap-compat)
@@ -508,17 +526,23 @@
       top: calc(100% + 4px);
       left: 0;
       z-index: 9000;
-      min-width: 160px;
+      min-width: 180px;
       padding: 6px 0;
       margin: 0;
       list-style: none;
-      background: rgba(20, 22, 35, 0.88);
-      backdrop-filter: blur(18px);
-      -webkit-backdrop-filter: blur(18px);
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      border-radius: var(--radius-card);
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.32);
+      background: var(--glass-bg);
+      backdrop-filter: var(--glass-blur);
+      -webkit-backdrop-filter: var(--glass-blur);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-input);
+      box-shadow: var(--glass-shadow);
       display: none;
+      animation: dropdownFadeIn 0.15s ease;
+    }
+
+    @keyframes dropdownFadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to   { opacity: 1; transform: translateY(0); }
     }
 
     .dropdown-menu.show { display: block; }
@@ -529,24 +553,37 @@
       padding: 8px 16px;
       font-size: var(--font-small);
       font-weight: 500;
-      color: rgba(240, 240, 240, 0.85);
+      color: var(--color-text);
       background: none;
       border: none;
       cursor: pointer;
       text-decoration: none;
       white-space: nowrap;
-      transition: background 0.15s, color 0.15s;
+      transition: background 0.12s, color 0.12s;
+      text-align: left;
     }
 
     .dropdown-item:hover {
-      background: rgba(255, 255, 255, 0.1);
-      color: #fff;
+      background: var(--glass-bg-hover);
+      color: var(--color-text);
     }
 
     .dropdown-item.active {
-      background: rgba(116, 185, 255, 0.25);
-      color: #fff;
+      background: rgba(116, 185, 255, 0.15);
+      color: #1a5276;
       font-weight: 600;
+    }
+
+    .dropdown-toggle::after {
+      display: inline-block;
+      margin-left: 0.4em;
+      vertical-align: 0.255em;
+      content: "";
+      border-top: 0.3em solid;
+      border-right: 0.3em solid transparent;
+      border-bottom: 0;
+      border-left: 0.3em solid transparent;
+      opacity: 0.7;
     }
 
     /* ============================================================
@@ -941,7 +978,7 @@
       display: inline-block;
       width: 20px;
       height: 20px;
-      border: 2px solid rgba(255, 255, 255, 0.4);
+      border: 2px solid rgba(0, 176, 255, 0.25);
       border-top-color: var(--color-info);
       border-radius: 50%;
       animation: spin 0.7s linear infinite;
@@ -1212,6 +1249,7 @@
   <script src="pages/langganan.js"></script>
   <script src="pages/laporan.js"></script>
   <script src="pages/pengaturan.js"></script>
+  <script src="pages/legal.js"></script>
 
   <!-- App router — must load last -->
   <script src="app.js"></script>

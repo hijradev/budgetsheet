@@ -204,8 +204,8 @@ function renderDashboard() {
         var wPengeluaran = weeklyData.map(function(w) { return w.pengeluaran || w.jumlah || w.value || 0; });
         var wPemasukan   = weeklyData.map(function(w) { return w.pemasukan || 0; });
         renderBarChart('line-chart', wLabels, [
-          { label: 'Pengeluaran', data: wPengeluaran, backgroundColor: 'rgba(239,108,108,0.7)', borderColor: '#EF6C6C' },
-          { label: 'Pemasukan',   data: wPemasukan,   backgroundColor: 'rgba(107,203,119,0.7)', borderColor: '#6BCB77' },
+          { label: 'Pengeluaran', data: wPengeluaran, backgroundColor: 'rgba(239,108,108,0.7)', borderColor: '#9b2335' },
+          { label: 'Pemasukan',   data: wPemasukan,   backgroundColor: 'rgba(107,203,119,0.7)', borderColor: '#276749' },
         ]);
       }).catch(function(e) {
         console.warn('[Dashboard] Chart.js gagal dimuat:', e);

@@ -27,12 +27,12 @@ function _buildLanggananRow(l) {
 
   var statusBadge;
   if (isNonaktif) {
-    statusBadge = '<span class="badge bg-secondary">Nonaktif</span>';
+    statusBadge = '<span class="badge badge-muted">Nonaktif</span>';
   } else if (isPeringatan) {
-    statusBadge = '<span class="badge bg-warning text-dark">' +
+    statusBadge = '<span class="badge badge-warning">' +
       (selisih <= 0 ? 'Jatuh Tempo!' : selisih + ' hari lagi') + '</span>';
   } else {
-    statusBadge = '<span class="badge bg-success">Aktif</span>';
+    statusBadge = '<span class="badge badge-success">Aktif</span>';
   }
 
   var bayarBtn = (!isNonaktif)

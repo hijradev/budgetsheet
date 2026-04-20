@@ -60,6 +60,19 @@ function renderPengaturan() {
           '</div>' +
         '</div>' +
 
+        // Legal links card
+        '<div class="col-12">' +
+          '<div class="glass-card p-3">' +
+            '<div class="fw-semibold mb-3"><i class="ti ti-file-text me-1"></i>Informasi Legal</div>' +
+            '<div class="d-flex flex-wrap gap-2">' +
+              '<a href="#/about" class="btn btn-sm btn-secondary"><i class="ti ti-info-circle me-1"></i>Tentang</a>' +
+              '<a href="#/license" class="btn btn-sm btn-secondary"><i class="ti ti-license me-1"></i>Lisensi</a>' +
+              '<a href="#/privacy" class="btn btn-sm btn-secondary"><i class="ti ti-shield-lock me-1"></i>Kebijakan Privasi</a>' +
+              '<a href="#/terms" class="btn btn-sm btn-secondary"><i class="ti ti-file-description me-1"></i>Syarat &amp; Ketentuan</a>' +
+            '</div>' +
+          '</div>' +
+        '</div>' +
+
         // Logout card
         '<div class="col-12">' +
           '<div class="glass-card p-3">' +

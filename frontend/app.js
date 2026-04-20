@@ -66,6 +66,10 @@ var routes = {
   '/langganan':  function() { renderLangganan(); },
   '/laporan':    function() { renderLaporan(); },
   '/pengaturan': function() { renderPengaturan(); },
+  '/about':      function() { renderAbout(); },
+  '/license':    function() { renderLicense(); },
+  '/privacy':    function() { renderPrivacy(); },
+  '/terms':      function() { renderTerms(); },
 };
 
 // ---------------------------------------------------------------------------

@@ -33,6 +33,7 @@ const JS_FILES = [
   'pages/langganan.js',
   'pages/laporan.js',
   'pages/pengaturan.js',
+  'pages/legal.js',
   'app.js',
 ];
 
