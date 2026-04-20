@@ -241,23 +241,21 @@ function _renderLanggananPage() {
     : '<tr><td colspan="8" class="text-muted text-center py-4">Belum ada langganan.</td></tr>';
 
   content.innerHTML =
-    '<div class="p-3 p-md-4">' +
-      '<div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-3">' +
-        '<h2 class="mb-0 fw-bold"><i class="ti ti-repeat me-2"></i>Langganan</h2>' +
-        '<button class="btn btn-primary" id="btn-tambah-langganan">' +
-          '<i class="ti ti-plus"></i> <span class="btn-text">Tambah Langganan</span>' +
-        '</button>' +
-      '</div>' +
-      '<div class="glass-card">' +
-        '<div class="table-responsive">' +
-          '<table class="table table-sm mb-0">' +
-            '<thead><tr>' +
-              '<th>Nama</th><th>Jumlah</th><th>Kategori</th><th>Dompet</th>' +
-              '<th>Frekuensi</th><th>Jatuh Tempo</th><th>Status</th><th>Aksi</th>' +
-            '</tr></thead>' +
-            '<tbody>' + rowsHtml + '</tbody>' +
-          '</table>' +
-        '</div>' +
+    '<div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-3">' +
+      '<h2 class="mb-0 fw-bold"><i class="ti ti-repeat me-2"></i>Langganan</h2>' +
+      '<button class="btn btn-primary" id="btn-tambah-langganan">' +
+        '<i class="ti ti-plus"></i> <span class="btn-text">Tambah Langganan</span>' +
+      '</button>' +
+    '</div>' +
+    '<div class="glass-card">' +
+      '<div class="table-responsive">' +
+        '<table class="table table-sm mb-0 table-wide">' +
+          '<thead><tr>' +
+            '<th>Nama</th><th>Jumlah</th><th>Kategori</th><th>Dompet</th>' +
+            '<th>Frekuensi</th><th>Jatuh Tempo</th><th>Status</th><th>Aksi</th>' +
+          '</tr></thead>' +
+          '<tbody>' + rowsHtml + '</tbody>' +
+        '</table>' +
       '</div>' +
     '</div>';
 

@@ -10,16 +10,14 @@ function _legalShell(title, icon, bodyHtml) {
   var content = document.getElementById('page-content');
   if (!content) return;
   content.innerHTML =
-    '<div class="p-3 p-md-4">' +
-      '<div class="d-flex align-items-center gap-2 mb-4">' +
-        '<button class="btn btn-sm btn-secondary" onclick="navigate(\'#/pengaturan\')">' +
-          '<i class="ti ti-arrow-left me-1"></i>Kembali' +
-        '</button>' +
-        '<h2 class="mb-0 fw-bold"><i class="ti ' + icon + ' me-2"></i>' + title + '</h2>' +
-      '</div>' +
-      '<div class="glass-card p-4" style="max-width:760px;line-height:1.8;">' +
-        bodyHtml +
-      '</div>' +
+    '<div class="d-flex align-items-center gap-2 mb-4">' +
+      '<button class="btn btn-sm btn-secondary" onclick="navigate(\'#/pengaturan\')">' +
+        '<i class="ti ti-arrow-left me-1"></i>Kembali' +
+      '</button>' +
+      '<h2 class="mb-0 fw-bold"><i class="ti ' + icon + ' me-2"></i>' + title + '</h2>' +
+    '</div>' +
+    '<div class="glass-card p-4" style="max-width:760px;line-height:1.8;">' +
+      bodyHtml +
     '</div>';
 }
 

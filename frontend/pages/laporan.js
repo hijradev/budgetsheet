@@ -250,10 +250,9 @@ function renderLaporan() {
   }).join('');
 
   content.innerHTML =
-    '<div class="p-3 p-md-4">' +
-      '<div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-3">' +
-        '<h2 class="mb-0 fw-bold"><i class="ti ti-report-analytics me-2"></i>Laporan</h2>' +
-      '</div>' +
+    '<div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-3">' +
+      '<h2 class="mb-0 fw-bold"><i class="ti ti-report-analytics me-2"></i>Laporan</h2>' +
+    '</div>' +
 
       // Stats cards — above filter
       '<div class="row g-3 mb-4">' +
@@ -311,8 +310,7 @@ function renderLaporan() {
         '</div>' +
       '</div>' +
 
-      '<div id="laporan-content"></div>' +
-    '</div>';
+      '<div id="laporan-content"></div>';
 
   // Dropdown periode item clicks
   content.querySelectorAll('.dropdown-item[data-periode]').forEach(function(item) {

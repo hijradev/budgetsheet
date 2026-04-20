@@ -290,7 +290,7 @@ function renderTransaksi() {
 
     // Filter bar
     '<div class="glass-card p-3 mb-4">' +
-      '<div class="grid-4" style="gap:12px;align-items:end;">' +
+      '<div class="trx-filter-grid">' +
         '<div>' +
           '<label class="small fw-medium mb-1">Cari</label>' +
           '<input type="text" id="trx-q" placeholder="Catatan, kategori, dompet...">' +
@@ -327,13 +327,15 @@ function renderTransaksi() {
     '</div>' +
 
     // Table
-    '<div class="glass-card table-wrapper">' +
-      '<table>' +
-        '<thead><tr>' +
-          '<th>Tanggal</th><th>Jenis</th><th>Kategori</th><th>Dompet</th><th>Jumlah</th><th>Catatan</th><th>Aksi</th>' +
-        '</tr></thead>' +
-        '<tbody id="trx-tbody"></tbody>' +
-      '</table>' +
+    '<div class="glass-card p-0">' +
+      '<div class="table-responsive">' +
+        '<table class="table-wide">' +
+          '<thead><tr>' +
+            '<th>Tanggal</th><th>Jenis</th><th>Kategori</th><th>Dompet</th><th>Jumlah</th><th>Catatan</th><th>Aksi</th>' +
+          '</tr></thead>' +
+          '<tbody id="trx-tbody"></tbody>' +
+        '</table>' +
+      '</div>' +
     '</div>' +
 
     '<div style="text-align:center;margin-top:16px;">' +

@@ -219,15 +219,13 @@ function _renderAnggaranPage() {
     : '<div class="text-muted py-4 text-center">Belum ada anggaran.</div>';
 
   content.innerHTML =
-    '<div class="p-3 p-md-4">' +
-      '<div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-3">' +
-        '<h2 class="mb-0 fw-bold"><i class="ti ti-chart-pie me-2"></i>Anggaran</h2>' +
-        '<button class="btn btn-primary" id="btn-tambah-anggaran">' +
-          '<i class="ti ti-plus"></i> <span class="btn-text">Tambah Anggaran</span>' +
-        '</button>' +
-      '</div>' +
-      '<div class="grid-3">' + kartuHtml + '</div>' +
-    '</div>';
+    '<div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-3">' +
+      '<h2 class="mb-0 fw-bold"><i class="ti ti-chart-pie me-2"></i>Anggaran</h2>' +
+      '<button class="btn btn-primary" id="btn-tambah-anggaran">' +
+        '<i class="ti ti-plus"></i> <span class="btn-text">Tambah Anggaran</span>' +
+      '</button>' +
+    '</div>' +
+    '<div class="grid-3">' + kartuHtml + '</div>';
 
   document.getElementById('btn-tambah-anggaran').addEventListener('click', function() {
     _bukaFormAnggaran(null);

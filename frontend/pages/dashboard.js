@@ -120,7 +120,7 @@ function renderDashboard() {
 
           '<div class="text-center mb-4">' +
             '<div class="fw-semibold text-muted mb-1">Total Saldo</div>' +
-            '<div class="fw-bold text-primary" style="font-size:2rem;">' + formatCurrency(totalSaldo) + '</div>' +
+            '<div class="fw-bold text-primary saldo-total">' + formatCurrency(totalSaldo) + '</div>' +
             '<div class="text-muted small mt-1">Tersebar di <strong>' + jumlahDompet + '</strong> dompet</div>' +
           '</div>' +
 
@@ -187,13 +187,11 @@ function renderDashboard() {
     // Assemble
     // -----------------------------------------------------------------------
     content.innerHTML =
-      '<div class="p-3 p-md-4">' +
-        '<h2 class="mb-4 fw-bold">Dashboard</h2>' +
-        statsHtml +
-        summaryHtml +
-        transaksiHtml +
-        langgananHtml +
-      '</div>';
+      '<h2 class="mb-4 fw-bold">Dashboard</h2>' +
+      statsHtml +
+      summaryHtml +
+      transaksiHtml +
+      langgananHtml;
 
     // -----------------------------------------------------------------------
     // Render charts after DOM is ready

@@ -19,10 +19,9 @@ function renderPengaturan() {
     : '<span class="text-muted small">Spreadsheet URL tidak tersedia.</span>';
 
   content.innerHTML =
-    '<div class="p-3 p-md-4">' +
-      '<div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">' +
-        '<h2 class="mb-0 fw-bold"><i class="ti ti-settings me-2"></i>Pengaturan</h2>' +
-      '</div>' +
+    '<div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">' +
+      '<h2 class="mb-0 fw-bold"><i class="ti ti-settings me-2"></i>Pengaturan</h2>' +
+    '</div>' +
 
       '<div class="row g-4">' +
 
@@ -84,8 +83,7 @@ function renderPengaturan() {
           '</div>' +
         '</div>' +
 
-      '</div>' +
-    '</div>';
+      '</div>';
 
   // Change password form
   document.getElementById('form-ganti-password').addEventListener('submit', function(e) {
