@@ -174,11 +174,21 @@
       background: rgba(255, 255, 255, 0.3);
       border-radius: 999px;
       overflow: hidden;
+      display: flex;
+      height: 1rem;
     }
     .progress-bar {
       height: 100%;
       border-radius: 999px;
       transition: width 0.4s ease;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      overflow: hidden;
+      color: #fff;
+      text-align: center;
+      white-space: nowrap;
+      background-color: var(--color-info);
     }
     .bg-success { background: var(--color-success) !important; }
     .bg-danger  { background: var(--color-danger) !important; }
@@ -481,6 +491,12 @@
     .badge-danger  { background: rgba(239, 108, 108, 0.2); color: #9b2335; }
     .badge-info    { background: rgba(116, 185, 255, 0.2); color: #1a5276; }
     .badge-muted   { background: rgba(113, 128, 150, 0.15); color: var(--color-text-muted); }
+
+    /* Badge light backgrounds for text colors */
+    .bg-success-lt.text-success { color: #276749; }
+    .bg-warning-lt.text-warning { color: #7d5a00; }
+    .bg-danger-lt.text-danger   { color: #9b2335; }
+    .bg-info-lt.text-info       { color: #1a5276; }
 
     /* ============================================================
        DROPDOWN (Bootstrap-compat)

@@ -242,7 +242,9 @@ var LaporanService = {
 
     // Baca semua transaksi
     var items = [];
-    if (deps.transaksiRows && deps.transaksiRows.length > 0) {
+    if (deps.items && deps.items.length > 0) {
+      items = deps.items;
+    } else if (deps.transaksiRows && deps.transaksiRows.length > 0) {
       for (var i = 1; i < deps.transaksiRows.length; i++) {
         items.push(SpreadsheetHelper.rowToObject(TRANSAKSI_HEADERS, deps.transaksiRows[i]));
       }
@@ -345,27 +347,70 @@ var LaporanService = {
    * }}
    */
   getDashboardData: function(deps) {
+    // ── 0. Caching logic ─────────────────────────────────────────────────────
+    var cache = CacheService.getScriptCache();
+    var version = cache.get('CACHE_PREFIX_VERSION') || '1';
+    var cacheKey = 'dash_data_v' + version;
+    
+    try {
+      var cached = cache.get(cacheKey);
+      if (cached) {
+        return JSON.parse(cached);
+      }
+    } catch (e) {
+      if (typeof Logger !== 'undefined') Logger.log('Cache read error: ' + e);
+    }
+
+    // ── Pre-fetch all data to avoid redundant sheet reads ───────────────────
+    var SpreadsheetHelper = deps.SpreadsheetHelper;
+    
+    // Fetch all transactions once and transform to objects
+    var trxSheet = deps.getSheet('Transaksi');
+    var trxRows  = SpreadsheetHelper.batchRead(trxSheet);
+    var items    = [];
+    for (var i = 1; i < trxRows.length; i++) {
+      items.push(SpreadsheetHelper.rowToObject(deps.TRANSAKSI_HEADERS, trxRows[i]));
+    }
+    
+    // Inject pre-fetched items into deps for getLaporanData calls
+    deps.items = items;
+
+    // Fetch other lists once
+    var dompetList = [];
+    if (deps.DompetService) {
+      try { dompetList = deps.DompetService.getDompet(deps); } catch (e) {}
+    }
+    deps.dompetList = dompetList; // For use in enriched data below
+
+    var kategoriList = [];
+    if (deps.KategoriService) {
+      try { kategoriList = deps.KategoriService.getKategori(deps); } catch (e) {}
+    }
+    deps.kategoriList = kategoriList;
+
+    var anggaranList = [];
+    if (deps.AnggaranService) {
+      try { anggaranList = deps.AnggaranService.getAnggaran(deps) || []; } catch (e) {}
+    }
+    deps.anggaranList = anggaranList;
+
+    var semuaLangganan = [];
+    if (deps.LanggananService) {
+      try { semuaLangganan = deps.LanggananService.getLangganan(deps) || []; } catch (e) {}
+    }
+    deps.langgananList = semuaLangganan;
+
     // ── 1. Total saldo semua dompet ──────────────────────────────────────────
     var totalSaldo   = 0;
-    var jumlahDompet = 0;
-    if (deps.DompetService) {
-      try {
-        var dompetList = deps.DompetService.getDompet(deps);
-        jumlahDompet   = dompetList.length;
-        for (var i = 0; i < dompetList.length; i++) {
-          totalSaldo += Number(dompetList[i].saldoSaatIni || 0);
-        }
-      } catch (e) {
-        if (typeof Logger !== 'undefined') Logger.log('getDashboardData (Dompet): ' + e);
-      }
+    var jumlahDompet = dompetList.length;
+    for (var i = 0; i < dompetList.length; i++) {
+      totalSaldo += Number(dompetList[i].saldoSaatIni || 0);
     }
 
     // ── 2. Pemasukan & pengeluaran bulan ini ─────────────────────────────────
     var today     = new Date();
     var year      = today.getFullYear();
     var month     = today.getMonth();
-    var bulanMulai = new Date(year, month, 1, 0, 0, 0, 0);
-    var bulanAkhir = new Date(year, month + 1, 0, 23, 59, 59, 999);
 
     var laporanBulan = LaporanService.getLaporanData(
       { periode: 'Bulanan' },
@@ -377,15 +422,8 @@ var LaporanService = {
 
     // ── 3. Total anggaran bulan ini ──────────────────────────────────────────
     var totalAnggaran = 0;
-    if (deps.AnggaranService) {
-      try {
-        var anggaranList = deps.AnggaranService.getAnggaran(deps) || [];
-        for (var i = 0; i < anggaranList.length; i++) {
-          totalAnggaran += Number(anggaranList[i].jumlahAnggaran || anggaranList[i].JumlahAnggaran || 0);
-        }
-      } catch (e) {
-        if (typeof Logger !== 'undefined') Logger.log('getDashboardData (Anggaran): ' + e);
-      }
+    for (var i = 0; i < anggaranList.length; i++) {
+      totalAnggaran += Number(anggaranList[i].jumlahAnggaran || anggaranList[i].JumlahAnggaran || 0);
     }
 
     // ── 4. Transaksi terbaru (maks 6) ────────────────────────────────────────
@@ -396,16 +434,6 @@ var LaporanService = {
       allTrx.sort(function(a, b) {
         return new Date(b.Tanggal) - new Date(a.Tanggal);
       });
-
-      // Ambil metadata kategori & dompet untuk enrichment
-      var kategoriList = [];
-      var dompetList   = [];
-      if (deps.KategoriService) {
-        try { kategoriList = deps.KategoriService.getKategori(deps); } catch (e) {}
-      }
-      if (deps.DompetService) {
-        try { dompetList = deps.DompetService.getDompet(deps); } catch (e) {}
-      }
 
       var mapKategori = {};
       for (var i = 0; i < kategoriList.length; i++) {
@@ -439,31 +467,28 @@ var LaporanService = {
 
     // ── 5. Langganan jatuh tempo 7 hari ke depan ─────────────────────────────
     var langgananJatuhTempo = [];
-    if (deps.LanggananService) {
-      try {
-        var semuaLangganan = deps.LanggananService.getLangganan(deps) || [];
-        var batasAkhir     = new Date(today);
-        batasAkhir.setDate(today.getDate() + 7);
-        batasAkhir.setHours(23, 59, 59, 999);
+    try {
+      var batasAkhir = new Date(today);
+      batasAkhir.setDate(today.getDate() + 7);
+      batasAkhir.setHours(23, 59, 59, 999);
 
-        var hariIni = new Date(today);
-        hariIni.setHours(0, 0, 0, 0);
+      var hariIni = new Date(today);
+      hariIni.setHours(0, 0, 0, 0);
 
-        for (var i = 0; i < semuaLangganan.length; i++) {
-          var l   = semuaLangganan[i];
-          var due = new Date(l.tanggalJatuhTempo);
-          if (due >= hariIni && due <= batasAkhir) {
-            langgananJatuhTempo.push(l);
-          }
+      for (var i = 0; i < semuaLangganan.length; i++) {
+        var l   = semuaLangganan[i];
+        var due = new Date(l.tanggalJatuhTempo);
+        if (due >= hariIni && due <= batasAkhir) {
+          langgananJatuhTempo.push(l);
         }
-
-        // Urutkan ascending by tanggal jatuh tempo
-        langgananJatuhTempo.sort(function(a, b) {
-          return new Date(a.tanggalJatuhTempo) - new Date(b.tanggalJatuhTempo);
-        });
-      } catch (e) {
-        if (typeof Logger !== 'undefined') Logger.log('getDashboardData (Langganan): ' + e);
       }
+
+      // Urutkan ascending by tanggal jatuh tempo
+      langgananJatuhTempo.sort(function(a, b) {
+        return new Date(a.tanggalJatuhTempo) - new Date(b.tanggalJatuhTempo);
+      });
+    } catch (e) {
+      if (typeof Logger !== 'undefined') Logger.log('getDashboardData (Langganan): ' + e);
     }
 
     // ── 6. Pie chart pengeluaran per kategori (bulan ini) ────────────────────
@@ -472,12 +497,6 @@ var LaporanService = {
     // ── 7. Grafik pengeluaran mingguan (7 hari terakhir) ─────────────────────
     var weeklySpending = [];
     try {
-      var weekMulai = new Date(today);
-      weekMulai.setDate(today.getDate() - 6);
-      weekMulai.setHours(0, 0, 0, 0);
-      var weekAkhir = new Date(today);
-      weekAkhir.setHours(23, 59, 59, 999);
-
       var laporanMingguan = LaporanService.getLaporanData(
         { periode: 'Mingguan' },
         deps
@@ -487,7 +506,7 @@ var LaporanService = {
       if (typeof Logger !== 'undefined') Logger.log('getDashboardData (Weekly): ' + e);
     }
 
-    return {
+    var result = {
       totalSaldo:          totalSaldo,
       jumlahDompet:        jumlahDompet,
       totalPemasukan:      totalPemasukan,
@@ -498,6 +517,14 @@ var LaporanService = {
       pieChart:            pieChart,
       weeklySpending:      weeklySpending
     };
-  }
 
+    // ── 8. Cache result ──────────────────────────────────────────────────────
+    try {
+      cache.put(cacheKey, JSON.stringify(result), 600); // 10 minutes
+    } catch (e) {
+      if (typeof Logger !== 'undefined') Logger.log('Cache write error: ' + e);
+    }
+
+    return result;
+  }
 };

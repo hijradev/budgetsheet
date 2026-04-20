@@ -142,17 +142,25 @@ function _renderLaporanContent(data) {
   _updateStatsCards(data);
 
   laporanContent.innerHTML =
-    // Bar chart
-    '<div class="glass-card p-3 mb-4">' +
-      '<div class="fw-semibold mb-2"><i class="ti ti-chart-bar me-1"></i>Pemasukan vs Pengeluaran</div>' +
-      (perPeriode.length
-        ? '<div style="position:relative;height:260px;"><canvas id="laporan-bar-chart"></canvas></div>'
-        : '<div class="text-muted text-center py-4">Belum ada data.</div>') +
+    // Charts row
+    '<div class="grid-2 mb-4">' +
+      '<div class="glass-card p-3">' +
+        '<div class="fw-semibold mb-2"><i class="ti ti-chart-bar me-1"></i>Pemasukan vs Pengeluaran</div>' +
+        (perPeriode.length
+          ? '<div style="position:relative;height:260px;"><canvas id="laporan-bar-chart"></canvas></div>'
+          : '<div class="text-muted text-center py-4">Belum ada data.</div>') +
+      '</div>' +
+      '<div class="glass-card p-3">' +
+        '<div class="fw-semibold mb-2"><i class="ti ti-chart-donut me-1"></i>Pengeluaran per Kategori</div>' +
+        (perKategori.length
+          ? '<div style="position:relative;height:260px;"><canvas id="laporan-pie-chart"></canvas></div>'
+          : '<div class="text-muted text-center py-4">Belum ada data.</div>') +
+      '</div>' +
     '</div>' +
 
     // Per-category table
     '<div class="glass-card p-3 mb-4">' +
-      '<div class="fw-semibold mb-2"><i class="ti ti-tag me-1"></i>Pengeluaran per Kategori</div>' +
+      '<div class="fw-semibold mb-2"><i class="ti ti-tag me-1"></i>Detail Pengeluaran per Kategori</div>' +
       _buildTabelKategoriLaporan(perKategori) +
     '</div>' +
 
@@ -164,16 +172,26 @@ function _renderLaporanContent(data) {
         '</div>'
       : '');
 
-  // Render bar chart
-  if (perPeriode.length) {
+  // Render charts
+  if (perPeriode.length || perKategori.length) {
     _ensureChartJSLaporan().then(function() {
-      var labels      = perPeriode.map(function(p) { return p.label; });
-      var pemasukan   = perPeriode.map(function(p) { return p.pemasukan || 0; });
-      var pengeluaran = perPeriode.map(function(p) { return p.pengeluaran || 0; });
-      renderBarChart('laporan-bar-chart', labels, [
-        { label: 'Pemasukan',   data: pemasukan,   backgroundColor: 'rgba(107,203,119,0.7)', borderColor: '#6BCB77' },
-        { label: 'Pengeluaran', data: pengeluaran, backgroundColor: 'rgba(239,108,108,0.7)', borderColor: '#EF6C6C' },
-      ]);
+      // Bar chart
+      if (perPeriode.length) {
+        var labels      = perPeriode.map(function(p) { return p.label; });
+        var pemasukan   = perPeriode.map(function(p) { return p.pemasukan || 0; });
+        var pengeluaran = perPeriode.map(function(p) { return p.pengeluaran || 0; });
+        renderBarChart('laporan-bar-chart', labels, [
+          { label: 'Pemasukan',   data: pemasukan,   backgroundColor: 'rgba(107,203,119,0.7)', borderColor: '#6BCB77' },
+          { label: 'Pengeluaran', data: pengeluaran, backgroundColor: 'rgba(239,108,108,0.7)', borderColor: '#EF6C6C' },
+        ]);
+      }
+      // Pie chart
+      if (perKategori.length) {
+        var pLabels = perKategori.map(function(p) { return p.nama || p.label || ''; });
+        var pValues = perKategori.map(function(p) { return p.total || p.value || 0; });
+        var pColors = perKategori.map(function(p) { return p.warna || p.color || null; }).filter(Boolean);
+        renderPieChart('laporan-pie-chart', pLabels, pValues, pColors.length === pLabels.length ? pColors : undefined);
+      }
     }).catch(function(e) {
       console.warn('[Laporan] Chart.js gagal dimuat:', e);
     });

@@ -81,27 +81,64 @@ function renderDashboard() {
     var weeklyData       = d.weeklySpending  || [];
 
     // -----------------------------------------------------------------------
+    var sisaAnggaran     = totalAnggaran - totalPengeluaran;
+    var jumlahDompet     = d.jumlahDompet     || 0;
+
+    // -----------------------------------------------------------------------
+    // Calculate budget usage percentage
+    // -----------------------------------------------------------------------
+    var budgetUsagePercent = totalAnggaran > 0 ? Math.min((totalPengeluaran / totalAnggaran) * 100, 100) : 0;
+    var budgetUsageColor = budgetUsagePercent >= 90 ? 'danger' : (budgetUsagePercent >= 70 ? 'warning' : 'success');
+    var availabilityPercent = totalAnggaran > 0 ? Math.max(100 - budgetUsagePercent, 0) : 0;
+
+    // -----------------------------------------------------------------------
     // Stats row
     // -----------------------------------------------------------------------
     var statsHtml =
       '<div class="grid-4 mb-4">' +
-        _statCard('ti-wallet',         'Total Saldo',            formatCurrency(totalSaldo),       'primary') +
-        _statCard('ti-arrow-down-circle', 'Pemasukan Bulan Ini', formatCurrency(totalPemasukan),   'success') +
+        _statCard('ti-arrow-down-circle', 'Pemasukan Bulan Ini',   formatCurrency(totalPemasukan),   'success') +
         _statCard('ti-arrow-up-circle',   'Pengeluaran Bulan Ini', formatCurrency(totalPengeluaran), 'danger') +
-        _statCard('ti-chart-pie',       'Total Anggaran',         formatCurrency(totalAnggaran),    'warning') +
+        _statCard('ti-chart-pie',         'Total Anggaran',        formatCurrency(totalAnggaran),    'warning') +
+        _statCard('ti-chart-bar',         'Anggaran Terpakai',     formatCurrency(totalPengeluaran), budgetUsageColor) +
       '</div>';
 
     // -----------------------------------------------------------------------
-    // Charts row
+    // Summary & Charts row
     // -----------------------------------------------------------------------
-    var chartsHtml =
+    var summaryHtml =
       '<div class="grid-2 mb-4">' +
-        '<div class="glass-card p-3">' +
-          '<div class="fw-semibold mb-2"><i class="ti ti-chart-donut me-1"></i>Pengeluaran per Kategori</div>' +
-          (pieData.length
-            ? '<div style="position:relative;height:220px;"><canvas id="pie-chart"></canvas></div>'
-            : '<div class="text-muted text-center py-4">Belum ada data.</div>') +
+        '<div class="glass-card p-4">' +
+          '<div class="d-flex align-items-center gap-3 mb-3">' +
+            '<div class="avatar bg-primary-lt">' +
+              '<i class="ti ti-book text-primary fs-3"></i>' +
+            '</div>' +
+            '<div>' +
+              '<h3 class="fw-bold mb-0 text-primary">Ringkasan Keuangan</h3>' +
+              '<p class="text-muted small mb-0">Gambaran umum kondisi keuangan Anda</p>' +
+            '</div>' +
+          '</div>' +
+
+          '<div class="text-center mb-4">' +
+            '<div class="fw-semibold text-muted mb-1">Total Saldo</div>' +
+            '<div class="fw-bold text-primary" style="font-size:2rem;">' + formatCurrency(totalSaldo) + '</div>' +
+            '<div class="text-muted small mt-1">Tersebar di <strong>' + jumlahDompet + '</strong> dompet</div>' +
+          '</div>' +
+
+          '<div class="border-top pt-3">' +
+            '<div class="d-flex justify-content-between align-items-center mb-2">' +
+              '<span class="fw-bold">Anggaran tersedia</span>' +
+              '<span class="fw-bold">' + formatCurrency(sisaAnggaran < 0 ? 0 : sisaAnggaran) + '</span>' +
+            '</div>' +
+            '<div class="progress mb-2" style="height: 8px;">' +
+              '<div class="progress-bar" style="width:' + availabilityPercent + '%;background:#206bc4;border-radius:999px;"></div>' +
+            '</div>' +
+            '<div class="d-flex justify-content-between align-items-center">' +
+              '<span class="text-muted small">Persentase dana yang masih bisa dipakai</span>' +
+              '<span class="fw-semibold" style="color:#206bc4;">' + availabilityPercent.toFixed(1).replace('.', ',') + '%</span>' +
+            '</div>' +
+          '</div>' +
         '</div>' +
+        
         '<div class="glass-card p-3">' +
           '<div class="fw-semibold mb-2"><i class="ti ti-chart-line me-1"></i>Pengeluaran Mingguan</div>' +
           (weeklyData.length
@@ -153,7 +190,7 @@ function renderDashboard() {
       '<div class="p-3 p-md-4">' +
         '<h2 class="mb-4 fw-bold">Dashboard</h2>' +
         statsHtml +
-        chartsHtml +
+        summaryHtml +
         transaksiHtml +
         langgananHtml +
       '</div>';
@@ -161,23 +198,15 @@ function renderDashboard() {
     // -----------------------------------------------------------------------
     // Render charts after DOM is ready
     // -----------------------------------------------------------------------
-    if (pieData.length || weeklyData.length) {
+    if (weeklyData.length) {
       _ensureChartJS().then(function() {
-        if (pieData.length) {
-          var labels = pieData.map(function(p) { return p.label || p.nama || p.kategori || ''; });
-          var values = pieData.map(function(p) { return p.value || p.total || p.jumlah || 0; });
-          var colors = pieData.map(function(p) { return p.color || p.warna || null; }).filter(Boolean);
-          renderPieChart('pie-chart', labels, values, colors.length === labels.length ? colors : undefined);
-        }
-        if (weeklyData.length) {
-          var wLabels = weeklyData.map(function(w) { return w.label || w.minggu || ''; });
-          var wPengeluaran = weeklyData.map(function(w) { return w.pengeluaran || w.jumlah || w.value || 0; });
-          var wPemasukan   = weeklyData.map(function(w) { return w.pemasukan || 0; });
-          renderBarChart('line-chart', wLabels, [
-            { label: 'Pengeluaran', data: wPengeluaran, backgroundColor: 'rgba(239,108,108,0.7)', borderColor: '#EF6C6C' },
-            { label: 'Pemasukan',   data: wPemasukan,   backgroundColor: 'rgba(107,203,119,0.7)', borderColor: '#6BCB77' },
-          ]);
-        }
+        var wLabels = weeklyData.map(function(w) { return w.label || w.minggu || ''; });
+        var wPengeluaran = weeklyData.map(function(w) { return w.pengeluaran || w.jumlah || w.value || 0; });
+        var wPemasukan   = weeklyData.map(function(w) { return w.pemasukan || 0; });
+        renderBarChart('line-chart', wLabels, [
+          { label: 'Pengeluaran', data: wPengeluaran, backgroundColor: 'rgba(239,108,108,0.7)', borderColor: '#EF6C6C' },
+          { label: 'Pemasukan',   data: wPemasukan,   backgroundColor: 'rgba(107,203,119,0.7)', borderColor: '#6BCB77' },
+        ]);
       }).catch(function(e) {
         console.warn('[Dashboard] Chart.js gagal dimuat:', e);
       });

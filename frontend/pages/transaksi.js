@@ -170,7 +170,7 @@ async function _trxSubmit(id) {
     var res = await callBackend('saveTransaksi', data, getToken());
     if (res && res.success) {
       showToast(id ? 'Transaksi diperbarui' : 'Transaksi disimpan', 'success');
-      AppCache.invalidate();
+      AppCache.invalidate('dompet');
       renderTransaksi();
     } else {
       showToast((res && res.error) || 'Gagal menyimpan transaksi', 'error');
@@ -262,7 +262,7 @@ async function _trxDelete(id) {
     var res = await callBackend('deleteTransaksi', id, getToken());
     if (res && res.success) {
       showToast('Transaksi dihapus', 'success');
-      AppCache.invalidate();
+      AppCache.invalidate('dompet');
       renderTransaksi();
     } else {
       showToast((res && res.error) || 'Gagal menghapus', 'error');
@@ -275,19 +275,13 @@ async function _trxDelete(id) {
 // ---------------------------------------------------------------------------
 // Main render
 // ---------------------------------------------------------------------------
-async function renderTransaksi() {
+function renderTransaksi() {
   var content = document.getElementById('page-content');
   if (!content) return;
 
   _trxState = { items: [], total: 0, offset: 0, limit: 15, filter: {} };
 
-  // Fetch categories and wallets for filter selects
-  var kategoriList = await AppCache.getKategori();
-  var dompetList   = await AppCache.getDompet();
-
-  var opsiKategori = _trxBuildOptions(kategoriList, 'id', 'nama', '');
-  var opsiDompet   = _trxBuildOptions(dompetList,   'id', 'nama', '');
-
+  // Render shell immediately
   content.innerHTML =
     '<div class="flex-between mb-4">' +
       '<h2 class="page-title"><i class="ti ti-arrows-exchange" style="margin-right:8px;"></i>Transaksi</h2>' +
@@ -311,11 +305,11 @@ async function renderTransaksi() {
         '</div>' +
         '<div style="flex:1;min-width:140px;">' +
           '<label>Kategori</label>' +
-          '<select id="trx-kategori"><option value="">Semua</option>' + opsiKategori + '</select>' +
+          '<select id="trx-kategori"><option value="">Memuat...</option></select>' +
         '</div>' +
         '<div style="flex:1;min-width:140px;">' +
           '<label>Dompet</label>' +
-          '<select id="trx-dompet"><option value="">Semua</option>' + opsiDompet + '</select>' +
+          '<select id="trx-dompet"><option value="">Memuat...</option></select>' +
         '</div>' +
         '<div style="flex:1;min-width:130px;">' +
           '<label>Jenis</label>' +
@@ -346,6 +340,16 @@ async function renderTransaksi() {
       '<button class="btn" id="trx-load-more" style="display:none;">Muat Lebih</button>' +
     '</div>';
 
+  // Fetch categories and wallets in background
+  Promise.all([AppCache.getKategori(), AppCache.getDompet()]).then(function(results) {
+    var kategoriList = results[0];
+    var dompetList   = results[1];
+    var selKat = document.getElementById('trx-kategori');
+    var selDom = document.getElementById('trx-dompet');
+    if (selKat) selKat.innerHTML = '<option value="">Semua</option>' + _trxBuildOptions(kategoriList, 'id', 'nama', '');
+    if (selDom) selDom.innerHTML = '<option value="">Semua</option>' + _trxBuildOptions(dompetList,   'id', 'nama', '');
+  });
+
   // Events
   document.getElementById('trx-tambah-btn').addEventListener('click', function() {
     _trxOpenForm(null);
@@ -371,6 +375,8 @@ async function renderTransaksi() {
 
   _trxLoad(false);
 }
+
+
 
 if (typeof window !== 'undefined') {
   window.renderTransaksi = renderTransaksi;
