@@ -1,0 +1,218 @@
+/**
+ * kategori.js — Halaman Kategori
+ */
+
+var _kategoriState = {
+  items: [],
+};
+
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+function _kategoriBadgeJenis(jenis) {
+  var map = {
+    Pemasukan:   'badge-success',
+    Pengeluaran: 'badge-danger',
+    Keduanya:    'badge-info',
+  };
+  return '<span class="badge ' + (map[jenis] || 'badge-muted') + '">' + jenis + '</span>';
+}
+
+// ---------------------------------------------------------------------------
+// Card builder
+// ---------------------------------------------------------------------------
+function _kategoriBuildCard(k) {
+  var warna = k.warna || '#206bc4';
+  var ikon  = k.ikon  || 'tag';
+  return '<div class="glass-card" style="padding:20px;position:relative;">' +
+    '<div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">' +
+      '<span style="width:40px;height:40px;border-radius:10px;background:' + warna + '22;color:' + warna + ';display:flex;align-items:center;justify-content:center;font-size:20px;">' +
+        '<i class="ti ti-' + ikon + '"></i>' +
+      '</span>' +
+      '<span style="font-weight:600;font-size:15px;flex:1;">' + k.nama + '</span>' +
+    '</div>' +
+    '<div style="margin-bottom:14px;">' + _kategoriBadgeJenis(k.jenis) + '</div>' +
+    '<div style="display:flex;gap:8px;">' +
+      '<button class="btn btn-sm" data-action="edit" data-id="' + k.id + '" style="flex:1;"><i class="ti ti-edit"></i> Edit</button>' +
+      '<button class="btn btn-sm btn-danger" data-action="delete" data-id="' + k.id + '" style="flex:1;"><i class="ti ti-trash"></i> Hapus</button>' +
+    '</div>' +
+  '</div>';
+}
+
+// ---------------------------------------------------------------------------
+// Modal form
+// ---------------------------------------------------------------------------
+function _kategoriOpenForm(kategori) {
+  var isEdit = !!kategori;
+  var k = kategori || {};
+
+  var bodyHtml =
+    '<form id="form-kategori">' +
+      '<div class="form-group">' +
+        '<label>Nama Kategori</label>' +
+        '<input type="text" id="fk-nama" value="' + (k.nama || '') + '" placeholder="mis. Makan, Transportasi, Gaji" required>' +
+      '</div>' +
+      '<div class="form-group">' +
+        '<label>Jenis</label>' +
+        '<select id="fk-jenis" required>' +
+          '<option value="Pemasukan"'   + (k.jenis === 'Pemasukan'   ? ' selected' : '') + '>Pemasukan</option>' +
+          '<option value="Pengeluaran"' + (k.jenis === 'Pengeluaran' ? ' selected' : '') + '>Pengeluaran</option>' +
+          '<option value="Keduanya"'    + (k.jenis === 'Keduanya'    ? ' selected' : '') + '>Keduanya</option>' +
+        '</select>' +
+      '</div>' +
+      '<div class="form-group">' +
+        '<label>Ikon (nama Tabler Icon)</label>' +
+        '<div style="display:flex;gap:8px;align-items:center;">' +
+          '<span style="font-size:22px;"><i class="ti ti-' + (k.ikon || 'tag') + '" id="fk-ikon-preview"></i></span>' +
+          '<input type="text" id="fk-ikon" value="' + (k.ikon || 'tag') + '" placeholder="mis. tag, shopping-cart" style="flex:1;">' +
+        '</div>' +
+      '</div>' +
+      '<div class="form-group">' +
+        '<label>Warna</label>' +
+        '<div style="display:flex;gap:8px;">' +
+          '<input type="color" id="fk-warna-picker" value="' + (k.warna || '#206bc4') + '" style="width:48px;padding:4px;">' +
+          '<input type="text" id="fk-warna" value="' + (k.warna || '#206bc4') + '" placeholder="#206bc4" style="flex:1;">' +
+        '</div>' +
+      '</div>' +
+    '</form>';
+
+  var footerHtml =
+    '<button class="btn btn-secondary" id="fk-batal-btn">Batal</button>' +
+    '<button class="btn btn-primary" id="fk-simpan-btn">Simpan</button>';
+
+  openModal(isEdit ? 'Edit Kategori' : 'Tambah Kategori', bodyHtml, footerHtml);
+
+  document.getElementById('fk-batal-btn').addEventListener('click', closeModal);
+
+  // Color picker sync
+  var picker = document.getElementById('fk-warna-picker');
+  var textWarna = document.getElementById('fk-warna');
+  picker.addEventListener('input', function() { textWarna.value = picker.value; });
+  textWarna.addEventListener('input', function() { picker.value = textWarna.value; });
+
+  // Icon preview
+  var inputIkon = document.getElementById('fk-ikon');
+  var previewIkon = document.getElementById('fk-ikon-preview');
+  inputIkon.addEventListener('input', function() {
+    previewIkon.className = 'ti ti-' + (inputIkon.value || 'tag');
+  });
+
+  document.getElementById('fk-simpan-btn').addEventListener('click', function() {
+    _kategoriSubmit(isEdit ? k.id : null);
+  });
+}
+
+async function _kategoriSubmit(id) {
+  var nama  = document.getElementById('fk-nama').value.trim();
+  var jenis = document.getElementById('fk-jenis').value;
+  var ikon  = document.getElementById('fk-ikon').value.trim() || 'tag';
+  var warna = document.getElementById('fk-warna').value.trim() || '#206bc4';
+
+  if (!nama) {
+    showToast('Nama kategori wajib diisi', 'error');
+    return;
+  }
+
+  var data = { id: id, nama: nama, jenis: jenis, ikon: ikon, warna: warna };
+
+  closeModal();
+  try {
+    var res = await callBackend('saveKategori', data, getToken());
+    if (res && res.success) {
+      showToast(id ? 'Kategori diperbarui' : 'Kategori ditambahkan', 'success');
+      AppCache.invalidate('kategori');
+      renderKategori();
+    } else {
+      showToast((res && res.error) || 'Gagal menyimpan kategori', 'error');
+    }
+  } catch (e) {
+    showToast('Gagal terhubung ke server', 'error');
+  }
+}
+
+async function _kategoriDelete(id) {
+  var ok = await confirmModal('Hapus kategori ini? Pastikan tidak ada transaksi yang menggunakannya.');
+  if (!ok) return;
+  try {
+    var res = await callBackend('deleteKategori', id, getToken());
+    if (res && res.success) {
+      showToast('Kategori dihapus', 'success');
+      AppCache.invalidate('kategori');
+      renderKategori();
+    } else {
+      showToast((res && res.error) || 'Gagal menghapus kategori', 'error');
+    }
+  } catch (e) {
+    showToast('Gagal terhubung ke server', 'error');
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Main render
+// ---------------------------------------------------------------------------
+async function renderKategori() {
+  var content = document.getElementById('page-content');
+  if (!content) return;
+
+  content.innerHTML =
+    '<div class="flex-between mb-4">' +
+      '<h2 class="page-title"><i class="ti ti-tag" style="margin-right:8px;"></i>Kategori</h2>' +
+      '<button class="btn btn-primary" id="kategori-tambah-btn"><i class="ti ti-plus"></i> Tambah Kategori</button>' +
+    '</div>' +
+    '<div id="kategori-grid" class="grid-3"></div>';
+
+  document.getElementById('kategori-tambah-btn').addEventListener('click', function() {
+    _kategoriOpenForm(null);
+  });
+
+  showPageLoader();
+  try {
+    var res = await callBackend('getKategori', getToken());
+    hidePageLoader();
+    if (!res || !res.success) {
+      showToast((res && res.error) || 'Gagal memuat kategori', 'error');
+      document.getElementById('kategori-grid').innerHTML = '<div style="color:var(--color-danger);">Gagal memuat kategori.</div>';
+      return;
+    }
+
+    _kategoriState.items = res.data || [];
+    _kategoriRenderGrid();
+  } catch (e) {
+    hidePageLoader();
+    showToast('Gagal terhubung ke server', 'error');
+  }
+}
+
+function _kategoriRenderGrid() {
+  var grid = document.getElementById('kategori-grid');
+  if (!grid) return;
+
+  if (!_kategoriState.items.length) {
+    grid.innerHTML = '<div class="empty-state"><i class="ti ti-tag"></i><p>Belum ada kategori. Tambahkan kategori pertama Anda.</p></div>';
+    return;
+  }
+
+  grid.innerHTML = _kategoriState.items.map(_kategoriBuildCard).join('');
+
+  grid.querySelectorAll('[data-action]').forEach(function(btn) {
+    btn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      var id = btn.getAttribute('data-id');
+      var action = btn.getAttribute('data-action');
+      var k = _kategoriState.items.find(function(x) { return x.id === id; });
+      if (action === 'edit' && k) {
+        _kategoriOpenForm(k);
+      } else if (action === 'delete') {
+        _kategoriDelete(id);
+      }
+    });
+  });
+}
+
+if (typeof window !== 'undefined') {
+  window.renderKategori = renderKategori;
+}
+
+if (typeof module !== 'undefined') {
+  module.exports = { renderKategori, _kategoriBuildCard, _kategoriBadgeJenis };
+}

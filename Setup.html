@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Setup - BudgetSheet</title>
+  
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Tabler Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+
+  <style>
+    :root {
+      --bg-gradient: linear-gradient(135deg, #A8D8EA 0%, #C9B8E8 50%, #B8E8D4 100%);
+      --glass-bg: rgba(255, 255, 255, 0.25);
+      --glass-border: rgba(255, 255, 255, 0.4);
+      --glass-blur: blur(12px);
+      --glass-shadow: 0 8px 32px rgba(31, 38, 135, 0.15);
+      --color-text: #2d3748;
+      --color-info: #74B9FF;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg-gradient);
+      background-attachment: fixed;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Inter', sans-serif;
+      color: var(--color-text);
+      padding: 20px;
+    }
+
+    .setup-card {
+      backdrop-filter: var(--glass-blur);
+      -webkit-backdrop-filter: var(--glass-blur);
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 24px;
+      box-shadow: var(--glass-shadow);
+      padding: 40px;
+      width: 100%;
+      max-width: 480px;
+      text-align: center;
+    }
+
+    .icon-box {
+      width: 64px;
+      height: 64px;
+      background: rgba(255, 255, 255, 0.4);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 24px;
+      font-size: 32px;
+      color: var(--color-info);
+    }
+
+    h1 { font-size: 24px; font-weight: 700; margin-bottom: 12px; }
+    p { font-size: 15px; color: #4a5568; line-height: 1.6; margin-bottom: 32px; }
+
+    .btn-setup {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(116, 185, 255, 0.4);
+      border: 1px solid rgba(116, 185, 255, 0.6);
+      padding: 14px 28px;
+      border-radius: 12px;
+      color: #1a5276;
+      font-weight: 600;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-decoration: none;
+    }
+
+    .btn-setup:hover {
+      background: rgba(116, 185, 255, 0.6);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(116, 185, 255, 0.2);
+    }
+
+    .btn-setup:active { transform: translateY(0); }
+    .btn-setup:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+    .status-msg { margin-top: 20px; font-size: 14px; font-weight: 500; min-height: 21px; }
+    .success { color: #38a169; }
+    .error { color: #e53e3e; }
+
+    .spinner {
+      display: none;
+      width: 20px;
+      height: 20px;
+      border: 2px solid rgba(255, 255, 255, 0.4);
+      border-top-color: var(--color-info);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+
+  <div class="setup-card">
+    <div class="icon-box">
+      <i class="ti ti-settings-automation"></i>
+    </div>
+    <h1>Inisialisasi BudgetSheet</h1>
+    <p>Selamat datang! BudgetSheet perlu menyiapkan Spreadsheet dan folder Google Drive untuk pertama kali. Proses ini otomatis dan hanya perlu dilakukan sekali.</p>
+    
+    <button id="btn-run-setup" class="btn-setup">
+      <span class="spinner" id="loader"></span>
+      <span id="btn-text">Mulai Setup Sekarang</span>
+    </button>
+
+    <div id="status" class="status-msg"></div>
+  </div>
+
+  <script>
+    const btn = document.getElementById('btn-run-setup');
+    const loader = document.getElementById('loader');
+    const btnText = document.getElementById('btn-text');
+    const status = document.getElementById('status');
+
+    btn.addEventListener('click', () => {
+      btn.disabled = true;
+      loader.style.display = 'inline-block';
+      btnText.textContent = 'Memproses...';
+      status.textContent = '';
+      status.className = 'status-msg';
+
+      google.script.run
+        .withSuccessHandler((res) => {
+          if (res && res.success) {
+            status.textContent = '✓ Setup Berhasil! Mengalihkan...';
+            status.className = 'status-msg success';
+            setTimeout(() => {
+              window.location.reload();
+            }, 2000);
+          } else {
+            handleError(res ? res.error : 'Terjadi kesalahan yang tidak diketahui');
+          }
+        })
+        .withFailureHandler((err) => {
+          handleError(err.message);
+        })
+        .setupSystem();
+    });
+
+    function handleError(msg) {
+      btn.disabled = false;
+      loader.style.display = 'none';
+      btnText.textContent = 'Coba Lagi';
+      status.textContent = '❌ ' + msg;
+      status.className = 'status-msg error';
+    }
+  </script>
+</body>
+</html>
