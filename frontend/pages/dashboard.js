@@ -156,9 +156,9 @@ function renderDashboard() {
 
     var transaksiHtml =
       '<div class="glass-card mb-4">' +
-        '<div class="d-flex align-items-center justify-content-between p-3 border-bottom">' +
+        '<div class="d-flex align-items-center justify-content-between p-3 border-bottom flex-wrap gap-2">' +
           '<div class="fw-semibold"><i class="ti ti-history me-1"></i>Transaksi Terbaru</div>' +
-          '<a href="#/transaksi" class="btn btn-sm btn-outline-primary">Lihat Semua</a>' +
+          '<a href="#/transaksi" class="btn btn-sm btn-outline-primary"><span class="btn-text">Lihat Semua</span><i class="ti ti-arrow-right d-md-none"></i></a>' +
         '</div>' +
         '<div class="table-responsive">' +
           '<table class="table table-sm mb-0">' +

@@ -109,10 +109,10 @@ function renderNav() {
     '</button>' +
     '<div class="nav-actions">' +
       '<button class="btn btn-primary btn-sm" id="nav-add-transaksi-btn">' +
-        '<i class="ti ti-plus me-1"></i>Tambah Transaksi' +
+        '<i class="ti ti-plus"></i> <span class="btn-text">Tambah Transaksi</span>' +
       '</button>' +
       '<button class="btn btn-ghost btn-sm" id="logout-btn">' +
-        '<i class="ti ti-logout me-1"></i>Keluar' +
+        '<i class="ti ti-logout"></i> <span class="btn-text">Keluar</span>' +
       '</button>' +
     '</div>';
 

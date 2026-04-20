@@ -142,9 +142,9 @@ async function renderDompet() {
   if (!content) return;
 
   content.innerHTML =
-    '<div class="flex-between mb-4">' +
-      '<h2 class="page-title"><i class="ti ti-wallet" style="margin-right:8px;"></i>Dompet</h2>' +
-      '<button class="btn btn-primary" id="dompet-tambah-btn"><i class="ti ti-plus"></i> Tambah Dompet</button>' +
+    '<div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-3">' +
+      '<h2 class="page-title mb-0"><i class="ti ti-wallet me-2"></i>Dompet</h2>' +
+      '<button class="btn btn-primary" id="dompet-tambah-btn"><i class="ti ti-plus"></i> <span class="btn-text">Tambah Dompet</span></button>' +
     '</div>' +
     '<div id="dompet-grid" class="grid-3"></div>';
 

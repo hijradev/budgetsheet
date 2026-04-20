@@ -196,7 +196,19 @@
     .bg-info    { background: var(--color-info) !important; }
 
     /* Bootstrap-style table utilities */
-    .table-responsive { overflow-x: auto; }
+    .table-responsive { 
+      overflow-x: auto; 
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(0, 0, 0, 0.1) transparent;
+    }
+    .table-responsive::-webkit-scrollbar {
+      height: 6px;
+    }
+    .table-responsive::-webkit-scrollbar-thumb {
+      background: rgba(0, 0, 0, 0.1);
+      border-radius: 10px;
+    }
     .table-sm td, .table-sm th { padding: 8px 12px; }
     .table-warning td { background: rgba(255, 209, 102, 0.12); }
 
@@ -421,13 +433,22 @@
     .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
     .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
 
-    @media (max-width: 1024px) {
+    @media (max-width: 1200px) {
+      .grid-4 { grid-template-columns: repeat(3, 1fr); }
+    }
+
+    @media (max-width: 992px) {
       .grid-4 { grid-template-columns: repeat(2, 1fr); }
       .grid-3 { grid-template-columns: repeat(2, 1fr); }
     }
 
-    @media (max-width: 640px) {
-      .grid-4, .grid-3, .grid-2 { grid-template-columns: 1fr; }
+    @media (max-width: 768px) {
+      .grid-2 { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 576px) {
+      .grid-4, .grid-3 { grid-template-columns: 1fr; }
+      .gap-3 { gap: 12px !important; }
     }
 
     /* ============================================================
@@ -1160,6 +1181,10 @@
        RESPONSIVE — MOBILE (app shell)
     ============================================================ */
     @media (max-width: 768px) {
+      :root {
+        --navbar-height: 56px;
+      }
+
       .nav-hamburger {
         display: block;
       }
@@ -1177,7 +1202,23 @@
 
       .page-content {
         margin-left: 0;
-        padding: 20px 16px;
+        padding: 16px 12px;
+      }
+
+      .page-title {
+        font-size: 20px;
+      }
+
+      .btn-text {
+        display: none;
+      }
+
+      .btn {
+        padding: 8px 12px;
+      }
+
+      .nav-brand-text {
+        font-size: 16px;
       }
     }
 

@@ -251,7 +251,7 @@ function renderLaporan() {
 
   content.innerHTML =
     '<div class="p-3 p-md-4">' +
-      '<div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">' +
+      '<div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-3">' +
         '<h2 class="mb-0 fw-bold"><i class="ti ti-report-analytics me-2"></i>Laporan</h2>' +
       '</div>' +
 
@@ -279,7 +279,7 @@ function renderLaporan() {
 
       // Filter card
       '<div class="glass-card p-3 mb-4" style="position:relative;z-index:200;overflow:visible;">' +
-        '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;align-items:end;">' +
+        '<div class="grid-4" style="gap:12px;align-items:end;">' +
           '<div>' +
             '<label class="form-label mb-1 small">Periode</label>' +
             '<div class="dropdown" style="display:block;">' +

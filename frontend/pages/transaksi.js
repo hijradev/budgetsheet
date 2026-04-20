@@ -283,36 +283,36 @@ function renderTransaksi() {
 
   // Render shell immediately
   content.innerHTML =
-    '<div class="flex-between mb-4">' +
-      '<h2 class="page-title"><i class="ti ti-arrows-exchange" style="margin-right:8px;"></i>Transaksi</h2>' +
-      '<button class="btn btn-primary" id="trx-tambah-btn"><i class="ti ti-plus"></i> Tambah Transaksi</button>' +
+    '<div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-3">' +
+      '<h2 class="page-title mb-0"><i class="ti ti-arrows-exchange me-2"></i>Transaksi</h2>' +
+      '<button class="btn btn-primary" id="trx-tambah-btn"><i class="ti ti-plus"></i> <span class="btn-text">Tambah Transaksi</span></button>' +
     '</div>' +
 
     // Filter bar
-    '<div class="glass-card" style="padding:16px;margin-bottom:20px;">' +
-      '<div style="display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;">' +
-        '<div style="flex:1;min-width:160px;">' +
-          '<label>Cari</label>' +
+    '<div class="glass-card p-3 mb-4">' +
+      '<div class="grid-4" style="gap:12px;align-items:end;">' +
+        '<div>' +
+          '<label class="small fw-medium mb-1">Cari</label>' +
           '<input type="text" id="trx-q" placeholder="Catatan, kategori, dompet...">' +
         '</div>' +
-        '<div style="flex:1;min-width:140px;">' +
-          '<label>Dari Tanggal</label>' +
+        '<div>' +
+          '<label class="small fw-medium mb-1">Dari Tanggal</label>' +
           '<input type="date" id="trx-mulai">' +
         '</div>' +
-        '<div style="flex:1;min-width:140px;">' +
-          '<label>Sampai Tanggal</label>' +
+        '<div>' +
+          '<label class="small fw-medium mb-1">Sampai Tanggal</label>' +
           '<input type="date" id="trx-akhir">' +
         '</div>' +
-        '<div style="flex:1;min-width:140px;">' +
-          '<label>Kategori</label>' +
+        '<div>' +
+          '<label class="small fw-medium mb-1">Kategori</label>' +
           '<select id="trx-kategori"><option value="">Memuat...</option></select>' +
         '</div>' +
-        '<div style="flex:1;min-width:140px;">' +
-          '<label>Dompet</label>' +
+        '<div>' +
+          '<label class="small fw-medium mb-1">Dompet</label>' +
           '<select id="trx-dompet"><option value="">Memuat...</option></select>' +
         '</div>' +
-        '<div style="flex:1;min-width:130px;">' +
-          '<label>Jenis</label>' +
+        '<div>' +
+          '<label class="small fw-medium mb-1">Jenis</label>' +
           '<select id="trx-jenis">' +
             '<option value="">Semua</option>' +
             '<option value="Pemasukan">Pemasukan</option>' +
@@ -321,7 +321,7 @@ function renderTransaksi() {
           '</select>' +
         '</div>' +
         '<div>' +
-          '<button class="btn btn-primary" id="trx-filter-btn"><i class="ti ti-filter"></i> Filter</button>' +
+          '<button class="btn btn-primary w-full" id="trx-filter-btn" style="justify-content:center;padding:11px 14px;"><i class="ti ti-filter"></i> Filter</button>' +
         '</div>' +
       '</div>' +
     '</div>' +

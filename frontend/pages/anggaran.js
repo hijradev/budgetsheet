@@ -220,10 +220,10 @@ function _renderAnggaranPage() {
 
   content.innerHTML =
     '<div class="p-3 p-md-4">' +
-      '<div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">' +
+      '<div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-3">' +
         '<h2 class="mb-0 fw-bold"><i class="ti ti-chart-pie me-2"></i>Anggaran</h2>' +
         '<button class="btn btn-primary" id="btn-tambah-anggaran">' +
-          '<i class="ti ti-plus me-1"></i>Tambah Anggaran' +
+          '<i class="ti ti-plus"></i> <span class="btn-text">Tambah Anggaran</span>' +
         '</button>' +
       '</div>' +
       '<div class="grid-3">' + kartuHtml + '</div>' +

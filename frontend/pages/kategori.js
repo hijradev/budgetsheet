@@ -155,9 +155,9 @@ async function renderKategori() {
   if (!content) return;
 
   content.innerHTML =
-    '<div class="flex-between mb-4">' +
-      '<h2 class="page-title"><i class="ti ti-tag" style="margin-right:8px;"></i>Kategori</h2>' +
-      '<button class="btn btn-primary" id="kategori-tambah-btn"><i class="ti ti-plus"></i> Tambah Kategori</button>' +
+    '<div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-3">' +
+      '<h2 class="page-title mb-0"><i class="ti ti-tag me-2"></i>Kategori</h2>' +
+      '<button class="btn btn-primary" id="kategori-tambah-btn"><i class="ti ti-plus"></i> <span class="btn-text">Tambah Kategori</span></button>' +
     '</div>' +
     '<div id="kategori-grid" class="grid-3"></div>';
 
