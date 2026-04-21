@@ -40,7 +40,7 @@ function _trxBuildOptions(items, valueKey, labelKey, selected) {
 // ---------------------------------------------------------------------------
 function _trxBuildRows(items) {
   if (!items || !items.length) {
-    return '<tr><td colspan="7" style="text-align:center;padding:24px;color:var(--color-text-muted);">Tidak ada transaksi.</td></tr>';
+    return '<tr><td colspan="7" class="text-center py-4 text-muted">Tidak ada transaksi.</td></tr>';
   }
   return items.map(function(t) {
     var prefix = t.jenis === 'Pemasukan' ? '+' : (t.jenis === 'Pengeluaran' ? '-' : '');
@@ -49,10 +49,10 @@ function _trxBuildRows(items) {
       '<td>' + _trxJenisBadge(t.jenis) + '</td>' +
       '<td>' + escapeHTML(t.kategori || '—') + '</td>' +
       '<td>' + escapeHTML(t.dompet || '—') + '</td>' +
-      '<td class="' + _trxJenisColor(t.jenis) + '" style="font-weight:600;">' + prefix + formatCurrency(t.jumlah) + '</td>' +
-      '<td style="color:var(--color-text-muted);font-size:13px;">' + escapeHTML(t.catatan || '') + '</td>' +
+      '<td class="' + _trxJenisColor(t.jenis) + ' fw-semibold">' + prefix + formatCurrency(t.jumlah) + '</td>' +
+      '<td class="text-muted text-sm">' + escapeHTML(t.catatan || '') + '</td>' +
       '<td>' +
-        '<button class="btn btn-sm" data-action="edit" data-id="' + t.id + '" title="Edit" style="padding:4px 8px;margin-right:4px;"><i class="ti ti-edit"></i></button>' +
+        '<button class="btn btn-sm me-1" data-action="edit" data-id="' + t.id + '" title="Edit" style="padding:4px 8px;"><i class="ti ti-edit"></i></button>' +
         '<button class="btn btn-sm btn-danger" data-action="delete" data-id="' + t.id + '" title="Hapus" style="padding:4px 8px;"><i class="ti ti-trash"></i></button>' +
       '</td>' +
     '</tr>';
@@ -91,7 +91,7 @@ async function _trxOpenForm(trx) {
       '<div class="form-group">' +
         '<label>Jumlah (Rp)</label>' +
         '<input type="number" id="ft-jumlah" min="1" value="' + (t.jumlah || '') + '" required placeholder="Contoh: 50000">' +
-        '<small style="color:var(--color-text-muted);">Masukkan angka tanpa titik atau koma pemisah</small>' +
+        '<small class="text-muted">Masukkan angka tanpa titik atau koma pemisah</small>' +
       '</div>' +
       '<div class="form-group">' +
         '<label>Kategori</label>' +
@@ -170,7 +170,7 @@ async function _trxSubmit(id, btn) {
   var originalText = btn ? btn.innerHTML : '';
   if (btn) {
     btn.disabled = true;
-    btn.innerHTML = '<span class="spinner" style="width:16px;height:16px;border-width:2px;"></span> Menyimpan...';
+    btn.innerHTML = '<span class="spinner spinner-sm"></span> Menyimpan...';
   }
 
   try {
@@ -257,10 +257,10 @@ function _trxRenderList() {
   var btnMore = document.getElementById('trx-load-more');
   if (btnMore) {
     if (_trxState.total > _trxState.offset) {
-      btnMore.style.display = '';
+      btnMore.classList.remove('hidden');
       btnMore.textContent = 'Muat Lebih (' + (_trxState.total - _trxState.offset) + ' lagi)';
     } else {
-      btnMore.style.display = 'none';
+      btnMore.classList.add('hidden');
     }
   }
 }
@@ -351,8 +351,8 @@ function renderTransaksi() {
       '</div>' +
     '</div>' +
 
-    '<div style="text-align:center;margin-top:16px;">' +
-      '<button class="btn" id="trx-load-more" style="display:none;">Muat Lebih</button>' +
+    '<div class="text-center mt-3">' +
+      '<button class="btn hidden" id="trx-load-more">Muat Lebih</button>' +
     '</div>';
 
   // Fetch categories and wallets in background

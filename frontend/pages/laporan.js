@@ -49,7 +49,7 @@ function _buildTabelKategoriLaporan(perKategori) {
       '<td>' + formatCurrency(k.total || 0) + '</td>' +
       '<td>' +
         '<div class="d-flex align-items-center gap-2">' +
-          '<div class="progress flex-grow-1" style="height:6px;">' +
+          '<div class="progress flex-grow-1 progress-sm">' +
             '<div class="progress-bar bg-danger" style="width:' + (k.persentase || 0) + '%;"></div>' +
           '</div>' +
           '<span class="text-muted small">' + pct + '%</span>' +
@@ -147,13 +147,13 @@ function _renderLaporanContent(data) {
       '<div class="glass-card p-3">' +
         '<div class="fw-semibold mb-2"><i class="ti ti-chart-bar me-1"></i>Pemasukan vs Pengeluaran</div>' +
         (perPeriode.length
-          ? '<div style="position:relative;height:260px;"><canvas id="laporan-bar-chart"></canvas></div>'
+          ? '<div class="chart-container-lg"><canvas id="laporan-bar-chart"></canvas></div>'
           : '<div class="text-muted text-center py-4">Belum ada data.</div>') +
       '</div>' +
       '<div class="glass-card p-3">' +
         '<div class="fw-semibold mb-2"><i class="ti ti-chart-donut me-1"></i>Pengeluaran per Kategori</div>' +
         (perKategori.length
-          ? '<div style="position:relative;height:260px;"><canvas id="laporan-pie-chart"></canvas></div>'
+          ? '<div class="chart-container-lg"><canvas id="laporan-pie-chart"></canvas></div>'
           : '<div class="text-muted text-center py-4">Belum ada data.</div>') +
       '</div>' +
     '</div>' +
@@ -277,16 +277,16 @@ function renderLaporan() {
       '</div>' +
 
       // Filter card
-      '<div class="glass-card p-3 mb-4" style="position:relative;z-index:200;overflow:visible;">' +
-        '<div class="grid-4" style="gap:12px;align-items:end;">' +
+      '<div class="glass-card p-3 mb-4 position-relative z-200 overflow-visible">' +
+        '<div class="grid-4 gap-3" style="align-items:end;">' +
           '<div>' +
             '<label class="form-label mb-1 small">Periode</label>' +
-            '<div class="dropdown" style="display:block;">' +
+            '<div class="dropdown dropdown-full">' +
               '<button class="btn btn-outline-secondary dropdown-toggle" type="button" ' +
-                'id="dropdown-periode" data-bs-toggle="dropdown" aria-expanded="false" style="width:100%;justify-content:space-between;padding:12.5px 14px;font-size:var(--font-small);">' +
+                'id="dropdown-periode" data-bs-toggle="dropdown" aria-expanded="false">' +
                 '<span><i class="ti ti-calendar me-1"></i>' + _laporanFilter.periode + '</span>' +
               '</button>' +
-              '<ul class="dropdown-menu" aria-labelledby="dropdown-periode" style="width:100%;">' +
+              '<ul class="dropdown-menu" aria-labelledby="dropdown-periode">' +
                 dropdownItems +
               '</ul>' +
             '</div>' +
@@ -302,8 +302,8 @@ function renderLaporan() {
               'value="' + _laporanFilter.tanggalAkhir + '">' +
           '</div>' +
           '<div>' +
-            '<label class="form-label mb-1 small" style="visibility:hidden;">Filter</label>' +
-            '<button class="btn btn-primary" id="btn-tampilkan-laporan" style="width:100%;justify-content:center;padding:12.5px 14px;font-size:var(--font-small);">' +
+            '<label class="form-label mb-1 small filter-label-hidden">Filter</label>' +
+            '<button class="btn btn-primary w-full" id="btn-tampilkan-laporan" style="justify-content:center;padding:12.5px 14px;font-size:var(--font-small);">' +
               '<i class="ti ti-search me-1"></i>Tampilkan' +
             '</button>' +
           '</div>' +

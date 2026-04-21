@@ -16,9 +16,20 @@ function callBackend(fnName) {
     if (typeof google !== 'undefined' && google.script && google.script.run) {
       var runner = google.script.run
         .withSuccessHandler(function(res) {
+          // Global interceptor for UNAUTHORIZED
+          if (res && res.success === false && res.error === 'UNAUTHORIZED') {
+            _handleUnauthorized();
+            reject(new Error('Sesi telah berakhir. Silakan login kembali.'));
+            return;
+          }
           resolve(res);
         })
         .withFailureHandler(function(err) {
+          if (err && (err === 'UNAUTHORIZED' || err.message === 'UNAUTHORIZED')) {
+            _handleUnauthorized();
+            reject(new Error('Sesi telah berakhir. Silakan login kembali.'));
+            return;
+          }
           reject(err);
         });
       runner[fnName].apply(runner, args);
@@ -26,6 +37,21 @@ function callBackend(fnName) {
       reject(new Error('google.script.run tidak tersedia'));
     }
   });
+}
+
+function _handleUnauthorized() {
+  clearToken();
+  if (typeof AppCache !== 'undefined') {
+    AppCache.invalidate();
+  }
+  if (typeof showToast !== 'undefined') {
+    showToast('Sesi Anda telah berakhir', 'warning');
+  }
+  if (typeof navigate !== 'undefined') {
+    navigate('#/login');
+  } else {
+    location.hash = '#/login';
+  }
 }
 
 /**
