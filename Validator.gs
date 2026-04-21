@@ -61,7 +61,10 @@ var Validator = (function () {
     if (!data.nama || typeof data.nama !== 'string' || data.nama.trim() === '') {
       throw new Error('Nama dompet harus diisi');
     }
-    validateJumlah(data.saldoAwal);
+    // saldoAwal hanya wajib saat membuat dompet baru, bukan saat edit
+    if (!data.id) {
+      validateJumlah(data.saldoAwal);
+    }
     return true;
   }
 

@@ -56,6 +56,7 @@ var DompetService = {
     var SpreadsheetHelper = deps.SpreadsheetHelper;
     var Validator         = deps.Validator;
     var DOMPET_HEADERS    = deps.DOMPET_HEADERS;
+    var DompetActivityService = deps.DompetActivityService;
 
     Validator.validateDompet(data);
 
@@ -67,12 +68,26 @@ var DompetService = {
       if (!found) throw new Error('Dompet tidak ditemukan');
 
       var existing = SpreadsheetHelper.rowToObject(DOMPET_HEADERS, found.rowData);
+      var oldNama = existing.Nama;
       existing.Nama  = Validator.sanitizeString(data.nama);
       existing.Ikon  = data.ikon  !== undefined ? data.ikon  : existing.Ikon;
       existing.Warna = data.warna !== undefined ? data.warna : existing.Warna;
 
       var updatedRow = SpreadsheetHelper.objectToRow(DOMPET_HEADERS, existing);
       SpreadsheetHelper.updateRow(sheet, found.rowIndex, updatedRow);
+
+      // Log aktivitas edit
+      if (DompetActivityService) {
+        DompetActivityService.logActivity({
+          aktivitas: 'Edit Dompet',
+          dompetId: existing.ID,
+          dompetNama: existing.Nama,
+          saldoSebelum: existing.SaldoSaatIni,
+          saldoSesudah: existing.SaldoSaatIni,
+          keterangan: oldNama !== existing.Nama ? 'Nama diubah dari "' + oldNama + '"' : 'Detail dompet diperbarui'
+        }, deps);
+      }
+
       return existing;
     } else {
       // CREATE — buat ID baru, set SaldoSaatIni = SaldoAwal
@@ -92,6 +107,20 @@ var DompetService = {
 
       var row = SpreadsheetHelper.objectToRow(DOMPET_HEADERS, dompet);
       SpreadsheetHelper.appendRow(sheet, row);
+
+      // Log aktivitas tambah
+      if (DompetActivityService) {
+        DompetActivityService.logActivity({
+          aktivitas: 'Tambah Dompet',
+          dompetId: dompet.ID,
+          dompetNama: dompet.Nama,
+          perubahanSaldo: saldoAwal,
+          saldoSebelum: 0,
+          saldoSesudah: saldoAwal,
+          keterangan: 'Dompet baru dibuat dengan saldo awal Rp ' + saldoAwal.toLocaleString('id-ID')
+        }, deps);
+      }
+
       return dompet;
     }
   },
@@ -107,6 +136,8 @@ var DompetService = {
   deleteDompet: function(id, deps) {
     var getSheet          = deps.getSheet;
     var SpreadsheetHelper = deps.SpreadsheetHelper;
+    var DOMPET_HEADERS    = deps.DOMPET_HEADERS;
+    var DompetActivityService = deps.DompetActivityService;
 
     // Cek referensi di sheet Transaksi (DompetAsalID = indeks 5, DompetTujuanID = indeks 6)
     var transaksiSheet = getSheet('Transaksi');
@@ -121,10 +152,25 @@ var DompetService = {
       }
     }
 
-    // Hapus baris dompet
+    // Ambil data dompet sebelum dihapus untuk log
     var dompetSheet = getSheet('Dompet');
     var found       = SpreadsheetHelper.findRowById(dompetSheet, id);
     if (!found) throw new Error('Dompet tidak ditemukan');
+
+    var dompet = SpreadsheetHelper.rowToObject(DOMPET_HEADERS, found.rowData);
+
+    // Log aktivitas hapus
+    if (DompetActivityService) {
+      DompetActivityService.logActivity({
+        aktivitas: 'Hapus Dompet',
+        dompetId: dompet.ID,
+        dompetNama: dompet.Nama,
+        perubahanSaldo: -Number(dompet.SaldoSaatIni),
+        saldoSebelum: Number(dompet.SaldoSaatIni),
+        saldoSesudah: 0,
+        keterangan: 'Dompet dihapus dengan saldo terakhir Rp ' + Number(dompet.SaldoSaatIni).toLocaleString('id-ID')
+      }, deps);
+    }
 
     SpreadsheetHelper.deleteRow(dompetSheet, found.rowIndex);
     return true;
@@ -137,22 +183,47 @@ var DompetService = {
    * @param {string} dompetId
    * @param {number} delta
    * @param {object} deps
+   * @param {object} [options] - opsi tambahan untuk logging
+   * @param {string} [options.dompetTerkaitId] - ID dompet terkait untuk transfer
+   * @param {string} [options.dompetTerkaitNama] - Nama dompet terkait untuk transfer
+   * @param {string} [options.keterangan] - Keterangan tambahan
    * @returns {object} objek dompet yang sudah diperbarui
    */
-  updateSaldoDompet: function(dompetId, delta, deps) {
+  updateSaldoDompet: function(dompetId, delta, deps, options) {
     var getSheet          = deps.getSheet;
     var SpreadsheetHelper = deps.SpreadsheetHelper;
     var DOMPET_HEADERS    = deps.DOMPET_HEADERS;
+    var DompetActivityService = deps.DompetActivityService;
+
+    options = options || {};
 
     var sheet = getSheet('Dompet');
     var found = SpreadsheetHelper.findRowById(sheet, dompetId);
     if (!found) throw new Error('Dompet tidak ditemukan');
 
     var dompet = SpreadsheetHelper.rowToObject(DOMPET_HEADERS, found.rowData);
-    dompet.SaldoSaatIni = Number(dompet.SaldoSaatIni) + delta;
+    var saldoSebelum = Number(dompet.SaldoSaatIni);
+    dompet.SaldoSaatIni = saldoSebelum + delta;
 
     var updatedRow = SpreadsheetHelper.objectToRow(DOMPET_HEADERS, dompet);
     SpreadsheetHelper.updateRow(sheet, found.rowIndex, updatedRow);
+
+    // Log aktivitas transfer jika ada dompet terkait
+    if (DompetActivityService && options.dompetTerkaitId) {
+      var aktivitas = delta > 0 ? 'Transfer Masuk' : 'Transfer Keluar';
+      DompetActivityService.logActivity({
+        aktivitas: aktivitas,
+        dompetId: dompet.ID,
+        dompetNama: dompet.Nama,
+        perubahanSaldo: delta,
+        saldoSebelum: saldoSebelum,
+        saldoSesudah: dompet.SaldoSaatIni,
+        dompetTerkaitId: options.dompetTerkaitId,
+        dompetTerkaitNama: options.dompetTerkaitNama,
+        keterangan: options.keterangan || ''
+      }, deps);
+    }
+
     return dompet;
   }
 

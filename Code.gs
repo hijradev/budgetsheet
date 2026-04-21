@@ -57,6 +57,7 @@ function createDeps() {
     KATEGORI_HEADERS:  KATEGORI_HEADERS,
     ANGGARAN_HEADERS:  ANGGARAN_HEADERS,
     LANGGANAN_HEADERS: LANGGANAN_HEADERS,
+    DOMPET_ACTIVITY_HEADERS: DOMPET_ACTIVITY_HEADERS,
 
     // Constants — column index maps
     TRANSAKSI_IDX: TRANSAKSI_IDX,
@@ -77,6 +78,7 @@ function createDeps() {
     AnggaranService:   AnggaranService,
     LanggananService:  LanggananService,
     LaporanService:    LaporanService,
+    DompetActivityService: DompetActivityService,
 
     // Sheet accessor
     getSheet: function(sheetName) {
@@ -147,6 +149,21 @@ function setupSystem() {
   } catch (e) {
     Logger.log('Error setupSystem: ' + e);
     return { success: false, error: e.message };
+  }
+}
+
+/**
+ * Run migration to add DompetActivity sheet. Auth required.
+ * @param {string} token
+ */
+function runMigration(token) {
+  try {
+    requireAuth(token);
+    var result = migrateDompetActivity();
+    return result;
+  } catch (e) {
+    Logger.log('Error runMigration: ' + e);
+    return { success: false, message: e.message };
   }
 }
 
@@ -319,6 +336,23 @@ function deleteDompet(id, token) {
     return { success: true, data: result };
   } catch (e) {
     Logger.log('Error deleteDompet: ' + e);
+    return { success: false, error: e.message };
+  }
+}
+
+/**
+ * Get dompet activity log with optional filters.
+ * @param {object} filter - { dompetId: string, limit: number }
+ * @param {string} token
+ */
+function getDompetActivity(filter, token) {
+  try {
+    requireAuth(token);
+    var d = createDeps();
+    var result = DompetActivityService.getActivities(filter, d);
+    return { success: true, data: result };
+  } catch (e) {
+    Logger.log('Error getDompetActivity: ' + e);
     return { success: false, error: e.message };
   }
 }

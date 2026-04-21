@@ -61,10 +61,12 @@ function _kategoriOpenForm(kategori) {
         '</select>' +
       '</div>' +
       '<div class="form-group">' +
-        '<label>Ikon (nama Tabler Icon)</label>' +
+        '<label>Ikon</label>' +
         '<div style="display:flex;gap:8px;align-items:center;">' +
           '<span style="font-size:22px;"><i class="ti ti-' + (k.ikon || 'tag') + '" id="fk-ikon-preview"></i></span>' +
-          '<input type="text" id="fk-ikon" value="' + (k.ikon || 'tag') + '" placeholder="mis. tag, shopping-cart" style="flex:1;">' +
+          '<select id="fk-ikon" style="flex:1;">' +
+            buildIconOptions(k.ikon || 'tag') +
+          '</select>' +
         '</div>' +
       '</div>' +
       '<div class="form-group">' +
@@ -93,16 +95,16 @@ function _kategoriOpenForm(kategori) {
   // Icon preview
   var inputIkon = document.getElementById('fk-ikon');
   var previewIkon = document.getElementById('fk-ikon-preview');
-  inputIkon.addEventListener('input', function() {
+  inputIkon.addEventListener('change', function() {
     previewIkon.className = 'ti ti-' + (inputIkon.value || 'tag');
   });
 
   document.getElementById('fk-simpan-btn').addEventListener('click', function() {
-    _kategoriSubmit(isEdit ? k.id : null);
+    _kategoriSubmit(isEdit ? k.id : null, this);
   });
 }
 
-async function _kategoriSubmit(id) {
+async function _kategoriSubmit(id, btn) {
   var nama  = document.getElementById('fk-nama').value.trim();
   var jenis = document.getElementById('fk-jenis').value;
   var ikon  = document.getElementById('fk-ikon').value.trim() || 'tag';
@@ -115,10 +117,17 @@ async function _kategoriSubmit(id) {
 
   var data = { id: id, nama: nama, jenis: jenis, ikon: ikon, warna: warna };
 
-  closeModal();
+  // Immediate loading feedback
+  var originalText = btn ? btn.innerHTML : '';
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner" style="width:16px;height:16px;border-width:2px;"></span> Menyimpan...';
+  }
+
   try {
     var res = await callBackend('saveKategori', data, getToken());
     if (res && res.success) {
+      closeModal();
       showToast(id ? 'Kategori diperbarui' : 'Kategori ditambahkan', 'success');
       AppCache.invalidate('kategori');
       renderKategori();
@@ -127,12 +136,15 @@ async function _kategoriSubmit(id) {
     }
   } catch (e) {
     showToast('Gagal terhubung ke server', 'error');
+  } finally {
+    if (btn) { btn.disabled = false; btn.innerHTML = originalText; }
   }
 }
 
 async function _kategoriDelete(id) {
   var ok = await confirmModal('Hapus kategori ini? Pastikan tidak ada transaksi yang menggunakannya.');
   if (!ok) return;
+  showPageLoader();
   try {
     var res = await callBackend('deleteKategori', id, getToken());
     if (res && res.success) {
@@ -140,9 +152,11 @@ async function _kategoriDelete(id) {
       AppCache.invalidate('kategori');
       renderKategori();
     } else {
+      hidePageLoader();
       showToast((res && res.error) || 'Gagal menghapus kategori', 'error');
     }
   } catch (e) {
+    hidePageLoader();
     showToast('Gagal terhubung ke server', 'error');
   }
 }

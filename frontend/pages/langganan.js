@@ -67,7 +67,14 @@ function _buildLanggananRow(l) {
 // ---------------------------------------------------------------------------
 // Bayar langganan
 // ---------------------------------------------------------------------------
-function _bayarLangganan(id) {
+function _bayarLangganan(id, btn) {
+  // Immediate loading feedback on the button
+  var originalText = btn ? btn.innerHTML : '';
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner" style="width:16px;height:16px;border-width:2px;"></span>';
+  }
+
   callBackend('bayarLangganan', id, getToken()).then(function(res) {
     if (res && res.success) {
       showToast('Pembayaran berhasil dicatat', 'success');
@@ -77,6 +84,8 @@ function _bayarLangganan(id) {
     }
   }).catch(function() {
     showToast('Gagal terhubung ke server', 'error');
+  }).finally(function() {
+    if (btn) { btn.disabled = false; btn.innerHTML = originalText; }
   });
 }
 
@@ -111,6 +120,7 @@ function _bukaFormLangganan(langganan) {
           '<label class="form-label">Jumlah (Rp)</label>' +
           '<input type="number" class="form-control" id="f-langganan-jumlah" min="1" ' +
             'value="' + (l.jumlah || '') + '" required>' +
+          '<div class="form-text">Masukkan angka tanpa titik atau koma pemisah</div>' +
         '</div>' +
         '<div class="mb-3">' +
           '<label class="form-label">Kategori</label>' +
@@ -154,12 +164,12 @@ function _bukaFormLangganan(langganan) {
 
     document.getElementById('btn-batal-langganan').addEventListener('click', closeModal);
     document.getElementById('btn-simpan-langganan').addEventListener('click', function() {
-      _submitFormLangganan(isEdit ? l.id : null);
+      _submitFormLangganan(isEdit ? l.id : null, this);
     });
   });
 }
 
-function _submitFormLangganan(id) {
+function _submitFormLangganan(id, btn) {
   var nama            = document.getElementById('f-langganan-nama').value.trim();
   var jumlah          = parseFloat(document.getElementById('f-langganan-jumlah').value);
   var kategoriId      = document.getElementById('f-langganan-kategori').value;
@@ -176,9 +186,16 @@ function _submitFormLangganan(id) {
   var data = { id: id, nama: nama, jumlah: jumlah, kategoriId: kategoriId, dompetId: dompetId,
     frekuensi: frekuensi, tanggalJatuhTempo: tanggalJatuhTempo, catatan: catatan };
 
-  closeModal();
+  // Immediate loading feedback
+  var originalText = btn ? btn.innerHTML : '';
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner" style="width:16px;height:16px;border-width:2px;"></span> Menyimpan...';
+  }
+
   callBackend('saveLangganan', data, getToken()).then(function(res) {
     if (res && res.success) {
+      closeModal();
       showToast(id ? 'Langganan berhasil diperbarui' : 'Langganan berhasil ditambahkan', 'success');
       renderLangganan();
     } else {
@@ -186,19 +203,24 @@ function _submitFormLangganan(id) {
     }
   }).catch(function() {
     showToast('Gagal terhubung ke server', 'error');
+  }).finally(function() {
+    if (btn) { btn.disabled = false; btn.innerHTML = originalText; }
   });
 }
 
 function _hapusLangganan(id) {
   if (!confirm('Hapus langganan ini?')) return;
+  showPageLoader();
   callBackend('deleteLangganan', id, getToken()).then(function(res) {
     if (res && res.success) {
       showToast('Langganan berhasil dihapus', 'success');
       renderLangganan();
     } else {
+      hidePageLoader();
       showToast((res && res.error) || 'Gagal menghapus langganan', 'error');
     }
   }).catch(function() {
+    hidePageLoader();
     showToast('Gagal terhubung ke server', 'error');
   });
 }
@@ -236,6 +258,76 @@ function _renderLanggananPage() {
   var content = document.getElementById('page-content');
   var semua   = _langgananState.semua;
 
+  // --- Stat calculations ---
+  var aktif        = semua.filter(function(l) { return l.status !== 'Nonaktif'; });
+  var totalTagihan = aktif.reduce(function(sum, l) { return sum + (l.jumlah || 0); }, 0);
+  var totalItem    = semua.length;
+
+  var now = new Date();
+  now.setHours(0, 0, 0, 0);
+  var bulanIni  = now.getMonth();
+  var tahunIni  = now.getFullYear();
+
+  var terbayar = semua.filter(function(l) {
+    // A subscription is considered paid this month if its due date has been
+    // pushed past the current month (i.e. next due is in a future month).
+    if (l.status === 'Nonaktif') return false;
+    var due = new Date(l.tanggalJatuhTempo);
+    return due.getFullYear() > tahunIni ||
+           (due.getFullYear() === tahunIni && due.getMonth() > bulanIni);
+  }).length;
+
+  var belumTerbayar = aktif.filter(function(l) {
+    var due = new Date(l.tanggalJatuhTempo);
+    due.setHours(0, 0, 0, 0);
+    return due <= now ||
+           (due.getFullYear() === tahunIni && due.getMonth() === bulanIni);
+  }).length;
+
+  var statsHtml =
+    '<div class="grid-4 mb-4">' +
+      '<div class="glass-card p-3 h-100">' +
+        '<div class="d-flex align-items-center gap-2 mb-1">' +
+          '<span class="stat-icon bg-danger-lt text-danger rounded-2 p-2 lh-1">' +
+            '<i class="ti ti-cash fs-5"></i>' +
+          '</span>' +
+          '<span class="text-muted small">Total Tagihan</span>' +
+        '</div>' +
+        '<div class="fw-bold fs-5 text-danger">' + formatCurrency(totalTagihan) + '</div>' +
+        '<div class="text-muted" style="font-size:.75rem">per bulan (aktif)</div>' +
+      '</div>' +
+      '<div class="glass-card p-3 h-100">' +
+        '<div class="d-flex align-items-center gap-2 mb-1">' +
+          '<span class="stat-icon bg-primary-lt text-primary rounded-2 p-2 lh-1">' +
+            '<i class="ti ti-repeat fs-5"></i>' +
+          '</span>' +
+          '<span class="text-muted small">Total Langganan</span>' +
+        '</div>' +
+        '<div class="fw-bold fs-5">' + totalItem + '</div>' +
+        '<div class="text-muted" style="font-size:.75rem">layanan terdaftar</div>' +
+      '</div>' +
+      '<div class="glass-card p-3 h-100">' +
+        '<div class="d-flex align-items-center gap-2 mb-1">' +
+          '<span class="stat-icon bg-success-lt text-success rounded-2 p-2 lh-1">' +
+            '<i class="ti ti-circle-check fs-5"></i>' +
+          '</span>' +
+          '<span class="text-muted small">Terbayar</span>' +
+        '</div>' +
+        '<div class="fw-bold fs-5 text-success">' + terbayar + '</div>' +
+        '<div class="text-muted" style="font-size:.75rem">sudah dibayar bulan ini</div>' +
+      '</div>' +
+      '<div class="glass-card p-3 h-100">' +
+        '<div class="d-flex align-items-center gap-2 mb-1">' +
+          '<span class="stat-icon bg-warning-lt text-warning rounded-2 p-2 lh-1">' +
+            '<i class="ti ti-clock-exclamation fs-5"></i>' +
+          '</span>' +
+          '<span class="text-muted small">Belum Terbayar</span>' +
+        '</div>' +
+        '<div class="fw-bold fs-5 text-warning">' + belumTerbayar + '</div>' +
+        '<div class="text-muted" style="font-size:.75rem">jatuh tempo bulan ini</div>' +
+      '</div>' +
+    '</div>';
+
   var rowsHtml = semua.length
     ? semua.map(_buildLanggananRow).join('')
     : '<tr><td colspan="8" class="text-muted text-center py-4">Belum ada langganan.</td></tr>';
@@ -247,6 +339,7 @@ function _renderLanggananPage() {
         '<i class="ti ti-plus"></i> <span class="btn-text">Tambah Langganan</span>' +
       '</button>' +
     '</div>' +
+    statsHtml +
     '<div class="glass-card">' +
       '<div class="table-responsive">' +
         '<table class="table table-sm mb-0 table-wide">' +
@@ -265,7 +358,7 @@ function _renderLanggananPage() {
 
   content.querySelectorAll('.btn-bayar-langganan').forEach(function(btn) {
     btn.addEventListener('click', function() {
-      _bayarLangganan(btn.getAttribute('data-id'));
+      _bayarLangganan(btn.getAttribute('data-id'), btn);
     });
   });
 

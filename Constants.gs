@@ -9,6 +9,7 @@ var SHEET_DOMPET    = 'Dompet';
 var SHEET_KATEGORI  = 'Kategori';
 var SHEET_ANGGARAN  = 'Anggaran';
 var SHEET_LANGGANAN = 'Langganan';
+var SHEET_DOMPET_ACTIVITY = 'DompetActivity';
 
 // Header arrays
 var TRANSAKSI_HEADERS = ['ID', 'Tanggal', 'Jenis', 'Jumlah', 'KategoriID', 'DompetAsalID', 'DompetTujuanID', 'Catatan', 'URLLampiran'];
@@ -16,6 +17,7 @@ var DOMPET_HEADERS    = ['ID', 'Nama', 'SaldoAwal', 'SaldoSaatIni', 'Ikon', 'War
 var KATEGORI_HEADERS  = ['ID', 'Nama', 'Jenis', 'Ikon', 'Warna'];
 var ANGGARAN_HEADERS  = ['ID', 'KategoriID', 'JumlahAnggaran', 'Periode', 'Bulan', 'Tahun'];
 var LANGGANAN_HEADERS = ['ID', 'Nama', 'Jumlah', 'KategoriID', 'DompetID', 'Frekuensi', 'TanggalJatuhTempo', 'Catatan', 'Status'];
+var DOMPET_ACTIVITY_HEADERS = ['ID', 'Timestamp', 'Aktivitas', 'DompetID', 'DompetNama', 'PerubahanSaldo', 'SaldoSebelum', 'SaldoSesudah', 'DompetTerkaitID', 'DompetTerkaitNama', 'Keterangan'];
 
 // Column index maps (0-based)
 var TRANSAKSI_IDX = {
@@ -67,4 +69,18 @@ var LANGGANAN_IDX = {
   TANGGAL_JATUH_TEMPO: 6,
   CATATAN:             7,
   STATUS:              8,
+};
+
+var DOMPET_ACTIVITY_IDX = {
+  ID:                   0,
+  TIMESTAMP:            1,
+  AKTIVITAS:            2,
+  DOMPET_ID:            3,
+  DOMPET_NAMA:          4,
+  PERUBAHAN_SALDO:      5,
+  SALDO_SEBELUM:        6,
+  SALDO_SESUDAH:        7,
+  DOMPET_TERKAIT_ID:    8,
+  DOMPET_TERKAIT_NAMA:  9,
+  KETERANGAN:           10,
 };

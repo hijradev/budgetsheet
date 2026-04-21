@@ -21,6 +21,7 @@ const DIST     = path.join(ROOT, 'dist');
 const JS_FILES = [
   'utils/format.js',
   'utils/api.js',
+  'utils/icons.js',
   'components/toast.js',
   'components/modal.js',
   'components/charts.js',
