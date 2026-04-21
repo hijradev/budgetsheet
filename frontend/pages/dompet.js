@@ -18,7 +18,7 @@ function _dompetBuildCard(d) {
       '<span style="width:40px;height:40px;border-radius:10px;background:' + warna + '22;color:' + warna + ';display:flex;align-items:center;justify-content:center;font-size:20px;">' +
         '<i class="ti ti-' + ikon + '"></i>' +
       '</span>' +
-      '<span style="font-weight:600;font-size:15px;flex:1;">' + d.nama + '</span>' +
+      '<span style="font-weight:600;font-size:15px;flex:1;">' + escapeHTML(d.nama) + '</span>' +
     '</div>' +
     '<div style="font-size:22px;font-weight:700;margin-bottom:4px;">' + formatCurrency(d.saldoSaatIni || 0) + '</div>' +
     '<div style="font-size:12px;color:var(--color-text-muted);">Saldo awal: ' + formatCurrency(d.saldoAwal || 0) + '</div>' +
@@ -303,11 +303,11 @@ function _dompetRenderActivityLog() {
           '<span style="font-size:13px;font-weight:500;">' + activity.aktivitas + '</span>' +
         '</div>' +
       '</td>' +
-      '<td style="padding:12px;font-size:13px;">' + activity.dompetNama + '</td>' +
+      '<td style="padding:12px;font-size:13px;">' + escapeHTML(activity.dompetNama) + '</td>' +
       '<td style="padding:12px;text-align:right;font-size:13px;">' + perubahanStr + '</td>' +
       '<td style="padding:12px;text-align:right;font-size:13px;color:var(--color-text-muted);">' + formatCurrency(activity.saldoSebelum) + '</td>' +
       '<td style="padding:12px;text-align:right;font-size:13px;font-weight:600;">' + formatCurrency(activity.saldoSesudah) + '</td>' +
-      '<td style="padding:12px;font-size:13px;color:var(--color-text-muted);">' + (keterangan || '-') + '</td>' +
+      '<td style="padding:12px;font-size:13px;color:var(--color-text-muted);">' + escapeHTML(keterangan || '-') + '</td>' +
     '</tr>';
   });
 

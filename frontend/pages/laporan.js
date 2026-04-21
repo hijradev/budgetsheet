@@ -45,7 +45,7 @@ function _buildTabelKategoriLaporan(perKategori) {
   var rows = perKategori.map(function(k) {
     var pct = (k.persentase || 0).toFixed(1);
     return '<tr>' +
-      '<td>' + (k.nama || k.kategori || '—') + '</td>' +
+      '<td>' + escapeHTML(k.nama || k.kategori || '—') + '</td>' +
       '<td>' + formatCurrency(k.total || 0) + '</td>' +
       '<td>' +
         '<div class="d-flex align-items-center gap-2">' +
@@ -82,7 +82,7 @@ function _buildTabelAnggaranLaporan(anggaranVsAktual) {
         ? '<span class="badge badge-warning">Peringatan</span>'
         : '<span class="badge badge-success">Normal</span>';
     return '<tr>' +
-      '<td>' + (a.kategoriNama || a.kategoriId || '—') + '</td>' +
+      '<td>' + escapeHTML(a.kategoriNama || a.kategoriId || '—') + '</td>' +
       '<td>' + formatCurrency(a.jumlahAnggaran || 0) + '</td>' +
       '<td>' + formatCurrency(a.realisasi || 0) + '</td>' +
       '<td>' + statusBadge + '</td>' +
