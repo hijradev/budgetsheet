@@ -688,3 +688,5 @@ J: Pastikan Anda tidak mengedit atau menghapus data langsung di Google Sheets. S
 
 _BudgetSheet — Pelacak Keuangan Pribadi di Google Sheets_  
 _Versi 1.0.0_
+Lisensi Komersial (dilarang menjual kembali atau menyebarluaskan secara gratis tanpa ijin)
+Customer support: [gaslybizid@gmail.com]
