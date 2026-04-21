@@ -29,7 +29,7 @@ function _kategoriBuildCard(k) {
       '<span style="width:40px;height:40px;border-radius:10px;background:' + warna + '22;color:' + warna + ';display:flex;align-items:center;justify-content:center;font-size:20px;">' +
         '<i class="ti ti-' + ikon + '"></i>' +
       '</span>' +
-      '<span style="font-weight:600;font-size:15px;flex:1;">' + k.nama + '</span>' +
+      '<span style="font-weight:600;font-size:15px;flex:1;">' + escapeHTML(k.nama) + '</span>' +
     '</div>' +
     '<div style="margin-bottom:14px;">' + _kategoriBadgeJenis(k.jenis) + '</div>' +
     '<div style="display:flex;gap:8px;">' +

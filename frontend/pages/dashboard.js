@@ -17,10 +17,10 @@ function _buildTransaksiRow(t) {
   return '<tr>' +
     '<td>' + formatDate(t.tanggal) + '</td>' +
     '<td><span class="badge bg-' + cls + '-lt text-' + cls + '">' + (t.jenis || '-') + '</span></td>' +
-    '<td>' + (t.kategori || '-') + '</td>' +
-    '<td>' + (t.dompet || '-') + '</td>' +
+    '<td>' + escapeHTML(t.kategori || '-') + '</td>' +
+    '<td>' + escapeHTML(t.dompet || '-') + '</td>' +
     '<td class="text-' + cls + ' fw-semibold">' + prefix + formatCurrency(t.jumlah) + '</td>' +
-    '<td class="text-muted small">' + (t.catatan || '-') + '</td>' +
+    '<td class="text-muted small">' + escapeHTML(t.catatan || '-') + '</td>' +
   '</tr>';
 }
 
@@ -45,11 +45,11 @@ function _buildLanggananItem(l) {
   return '<tr' + (isWarning && !isNonaktif ? ' class="table-warning"' : '') + '>' +
     '<td>' +
       (isWarning && !isNonaktif ? '<i class="ti ti-alert-triangle text-warning me-1"></i>' : '') +
-      (l.nama || '—') +
+      escapeHTML(l.nama || '—') +
     '</td>' +
     '<td class="fw-semibold text-danger">' + formatCurrency(l.jumlah) + '</td>' +
-    '<td>' + (l.kategoriNama || l.kategoriId || '—') + '</td>' +
-    '<td>' + (l.dompetNama || l.dompetId || '—') + '</td>' +
+    '<td>' + escapeHTML(l.kategoriNama || l.kategoriId || '—') + '</td>' +
+    '<td>' + escapeHTML(l.dompetNama || l.dompetId || '—') + '</td>' +
     '<td>' + (l.frekuensi || '—') + '</td>' +
     '<td>' + formatDate(l.tanggalJatuhTempo) + '</td>' +
     '<td>' + statusBadge + '</td>' +

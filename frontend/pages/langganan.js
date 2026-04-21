@@ -44,11 +44,11 @@ function _buildLanggananRow(l) {
   return '<tr' + (isPeringatan && !isNonaktif ? ' class="table-warning"' : '') + '>' +
     '<td>' +
       (isPeringatan && !isNonaktif ? '<i class="ti ti-alert-triangle text-warning me-1"></i>' : '') +
-      (l.nama || '—') +
+      escapeHTML(l.nama || '—') +
     '</td>' +
     '<td class="fw-semibold text-danger">' + formatCurrency(l.jumlah) + '</td>' +
-    '<td>' + (l.kategoriNama || l.kategoriId || '—') + '</td>' +
-    '<td>' + (l.dompetNama || l.dompetId || '—') + '</td>' +
+    '<td>' + escapeHTML(l.kategoriNama || l.kategoriId || '—') + '</td>' +
+    '<td>' + escapeHTML(l.dompetNama || l.dompetId || '—') + '</td>' +
     '<td>' + (l.frekuensi || '—') + '</td>' +
     '<td>' + formatDate(l.tanggalJatuhTempo) + '</td>' +
     '<td>' + statusBadge + '</td>' +

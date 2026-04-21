@@ -47,10 +47,10 @@ function _trxBuildRows(items) {
     return '<tr>' +
       '<td>' + formatDate(t.tanggal) + '</td>' +
       '<td>' + _trxJenisBadge(t.jenis) + '</td>' +
-      '<td>' + (t.kategori || '—') + '</td>' +
-      '<td>' + (t.dompet || '—') + '</td>' +
+      '<td>' + escapeHTML(t.kategori || '—') + '</td>' +
+      '<td>' + escapeHTML(t.dompet || '—') + '</td>' +
       '<td class="' + _trxJenisColor(t.jenis) + '" style="font-weight:600;">' + prefix + formatCurrency(t.jumlah) + '</td>' +
-      '<td style="color:var(--color-text-muted);font-size:13px;">' + (t.catatan || '') + '</td>' +
+      '<td style="color:var(--color-text-muted);font-size:13px;">' + escapeHTML(t.catatan || '') + '</td>' +
       '<td>' +
         '<button class="btn btn-sm" data-action="edit" data-id="' + t.id + '" title="Edit" style="padding:4px 8px;margin-right:4px;"><i class="ti ti-edit"></i></button>' +
         '<button class="btn btn-sm btn-danger" data-action="delete" data-id="' + t.id + '" title="Hapus" style="padding:4px 8px;"><i class="ti ti-trash"></i></button>' +

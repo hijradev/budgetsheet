@@ -74,6 +74,24 @@ function formatNumber(n) {
   return Math.round(n || 0).toLocaleString('id-ID');
 }
 
+/**
+ * Escape HTML characters to prevent XSS.
+ * @param {string} str
+ * @returns {string}
+ */
+function escapeHTML(str) {
+  if (typeof str !== 'string') return str;
+  return str.replace(/[&<>"']/g, function(match) {
+    switch (match) {
+      case '&': return '&amp;';
+      case '<': return '&lt;';
+      case '>': return '&gt;';
+      case '"': return '&quot;';
+      case "'": return '&#39;';
+    }
+  });
+}
+
 if (typeof module !== 'undefined') {
-  module.exports = { formatCurrency, formatDate, formatRelativeDate, formatNumber };
+  module.exports = { formatCurrency, formatDate, formatRelativeDate, formatNumber, escapeHTML };
 }

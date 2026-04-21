@@ -37,7 +37,7 @@ function _buildAnggaranCard(a) {
 
   return '<div class="glass-card p-3 anggaran-card" data-id="' + a.id + '" style="cursor:pointer;">' +
     '<div class="d-flex align-items-center justify-content-between mb-2">' +
-      '<span class="fw-semibold text-truncate">' + (a.kategoriNama || a.kategoriId || '—') + '</span>' +
+      '<span class="fw-semibold text-truncate">' + escapeHTML(a.kategoriNama || a.kategoriId || '—') + '</span>' +
       warningBadge +
     '</div>' +
     '<div class="text-muted small mb-1">' + (a.periode || 'Bulanan') +
