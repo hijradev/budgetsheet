@@ -35,7 +35,7 @@ function _buildAnggaranCard(a) {
     warningBadge = '<span class="badge bg-danger ms-1">Kritis</span>';
   }
 
-  return '<div class="glass-card p-3 anggaran-card" data-id="' + a.id + '" style="cursor:pointer;">' +
+  return '<div class="glass-card p-3 anggaran-card" data-id="' + a.id + '">' +
     '<div class="d-flex align-items-center justify-content-between mb-2">' +
       '<span class="fw-semibold text-truncate">' + escapeHTML(a.kategoriNama || a.kategoriId || '—') + '</span>' +
       warningBadge +
@@ -44,7 +44,7 @@ function _buildAnggaranCard(a) {
       (a.bulan ? ' · Bulan ' + a.bulan : '') +
       ' · ' + (a.tahun || '') +
     '</div>' +
-    '<div class="progress mb-2" style="height:8px;">' +
+    '<div class="progress mb-2 progress-md">' +
       '<div class="progress-bar ' + barCls + '" style="width:' + persen + '%;" role="progressbar" ' +
         'aria-valuenow="' + persen + '" aria-valuemin="0" aria-valuemax="100"></div>' +
     '</div>' +
@@ -159,7 +159,7 @@ function _submitFormAnggaran(id, btn) {
   var originalText = btn ? btn.innerHTML : '';
   if (btn) {
     btn.disabled = true;
-    btn.innerHTML = '<span class="spinner" style="width:16px;height:16px;border-width:2px;"></span> Menyimpan...';
+    btn.innerHTML = '<span class="spinner spinner-sm"></span> Menyimpan...';
   }
 
   callBackend('saveAnggaran', data, getToken()).then(function(res) {

@@ -72,7 +72,7 @@ function _bayarLangganan(id, btn) {
   var originalText = btn ? btn.innerHTML : '';
   if (btn) {
     btn.disabled = true;
-    btn.innerHTML = '<span class="spinner" style="width:16px;height:16px;border-width:2px;"></span>';
+    btn.innerHTML = '<span class="spinner spinner-sm"></span>';
   }
 
   callBackend('bayarLangganan', id, getToken()).then(function(res) {
@@ -190,7 +190,7 @@ function _submitFormLangganan(id, btn) {
   var originalText = btn ? btn.innerHTML : '';
   if (btn) {
     btn.disabled = true;
-    btn.innerHTML = '<span class="spinner" style="width:16px;height:16px;border-width:2px;"></span> Menyimpan...';
+    btn.innerHTML = '<span class="spinner spinner-sm"></span> Menyimpan...';
   }
 
   callBackend('saveLangganan', data, getToken()).then(function(res) {
@@ -288,43 +288,43 @@ function _renderLanggananPage() {
     '<div class="grid-4 mb-4">' +
       '<div class="glass-card p-3 h-100">' +
         '<div class="d-flex align-items-center gap-2 mb-1">' +
-          '<span class="stat-icon bg-danger-lt text-danger rounded-2 p-2 lh-1">' +
-            '<i class="ti ti-cash fs-5"></i>' +
+          '<span class="stat-icon bg-danger-lt">' +
+            '<i class="ti ti-cash"></i>' +
           '</span>' +
           '<span class="text-muted small">Total Tagihan</span>' +
         '</div>' +
         '<div class="fw-bold fs-5 text-danger">' + formatCurrency(totalTagihan) + '</div>' +
-        '<div class="text-muted" style="font-size:.75rem">per bulan (aktif)</div>' +
+        '<div class="text-muted text-xs">per bulan (aktif)</div>' +
       '</div>' +
       '<div class="glass-card p-3 h-100">' +
         '<div class="d-flex align-items-center gap-2 mb-1">' +
-          '<span class="stat-icon bg-primary-lt text-primary rounded-2 p-2 lh-1">' +
-            '<i class="ti ti-repeat fs-5"></i>' +
+          '<span class="stat-icon bg-primary-lt">' +
+            '<i class="ti ti-repeat"></i>' +
           '</span>' +
           '<span class="text-muted small">Total Langganan</span>' +
         '</div>' +
         '<div class="fw-bold fs-5">' + totalItem + '</div>' +
-        '<div class="text-muted" style="font-size:.75rem">layanan terdaftar</div>' +
+        '<div class="text-muted text-xs">layanan terdaftar</div>' +
       '</div>' +
       '<div class="glass-card p-3 h-100">' +
         '<div class="d-flex align-items-center gap-2 mb-1">' +
-          '<span class="stat-icon bg-success-lt text-success rounded-2 p-2 lh-1">' +
-            '<i class="ti ti-circle-check fs-5"></i>' +
+          '<span class="stat-icon bg-success-lt">' +
+            '<i class="ti ti-circle-check"></i>' +
           '</span>' +
           '<span class="text-muted small">Terbayar</span>' +
         '</div>' +
         '<div class="fw-bold fs-5 text-success">' + terbayar + '</div>' +
-        '<div class="text-muted" style="font-size:.75rem">sudah dibayar bulan ini</div>' +
+        '<div class="text-muted text-xs">sudah dibayar bulan ini</div>' +
       '</div>' +
       '<div class="glass-card p-3 h-100">' +
         '<div class="d-flex align-items-center gap-2 mb-1">' +
-          '<span class="stat-icon bg-warning-lt text-warning rounded-2 p-2 lh-1">' +
-            '<i class="ti ti-clock-exclamation fs-5"></i>' +
+          '<span class="stat-icon bg-warning-lt">' +
+            '<i class="ti ti-clock-exclamation"></i>' +
           '</span>' +
           '<span class="text-muted small">Belum Terbayar</span>' +
         '</div>' +
         '<div class="fw-bold fs-5 text-warning">' + belumTerbayar + '</div>' +
-        '<div class="text-muted" style="font-size:.75rem">jatuh tempo bulan ini</div>' +
+        '<div class="text-muted text-xs">jatuh tempo bulan ini</div>' +
       '</div>' +
     '</div>';
 

@@ -328,7 +328,7 @@ function bootstrap() {
       renderLoginPage();
     } else {
       var app = document.getElementById('app');
-      if (app) app.innerHTML = '<div class="flex-center" style="height:100vh">Gagal memuat modul login.</div>';
+      if (app) app.innerHTML = '<div class="flex-center vh-100">Gagal memuat modul login.</div>';
     }
     return;
   }

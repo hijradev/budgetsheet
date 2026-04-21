@@ -13,18 +13,18 @@ var _dompetState = {
 function _dompetBuildCard(d) {
   var warna = d.warna || '#206bc4';
   var ikon  = d.ikon  || 'wallet';
-  return '<div class="glass-card" style="padding:20px;position:relative;">' +
-    '<div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">' +
-      '<span style="width:40px;height:40px;border-radius:10px;background:' + warna + '22;color:' + warna + ';display:flex;align-items:center;justify-content:center;font-size:20px;">' +
+  return '<div class="glass-card p-4 position-relative">' +
+    '<div class="card-header-row">' +
+      '<span class="card-icon" style="background:' + warna + '22;color:' + warna + ';">' +
         '<i class="ti ti-' + ikon + '"></i>' +
       '</span>' +
-      '<span style="font-weight:600;font-size:15px;flex:1;">' + escapeHTML(d.nama) + '</span>' +
+      '<span class="card-title">' + escapeHTML(d.nama) + '</span>' +
     '</div>' +
-    '<div style="font-size:22px;font-weight:700;margin-bottom:4px;">' + formatCurrency(d.saldoSaatIni || 0) + '</div>' +
-    '<div style="font-size:12px;color:var(--color-text-muted);">Saldo awal: ' + formatCurrency(d.saldoAwal || 0) + '</div>' +
-    '<div style="display:flex;gap:8px;margin-top:14px;">' +
-      '<button class="btn btn-sm" data-action="edit" data-id="' + d.id + '" style="flex:1;"><i class="ti ti-edit"></i> Edit</button>' +
-      '<button class="btn btn-sm btn-danger" data-action="delete" data-id="' + d.id + '" style="flex:1;"><i class="ti ti-trash"></i> Hapus</button>' +
+    '<div class="card-value">' + formatCurrency(d.saldoSaatIni || 0) + '</div>' +
+    '<div class="card-subtitle">Saldo awal: ' + formatCurrency(d.saldoAwal || 0) + '</div>' +
+    '<div class="card-actions">' +
+      '<button class="btn btn-sm" data-action="edit" data-id="' + d.id + '"><i class="ti ti-edit"></i> Edit</button>' +
+      '<button class="btn btn-sm btn-danger" data-action="delete" data-id="' + d.id + '"><i class="ti ti-trash"></i> Hapus</button>' +
     '</div>' +
   '</div>';
 }
@@ -46,23 +46,23 @@ function _dompetOpenForm(dompet) {
         '<div class="form-group">' +
           '<label>Saldo Awal (Rp)</label>' +
           '<input type="number" id="fd-saldo-awal" min="0" value="' + (d.saldoAwal || 0) + '" required>' +
-          '<small style="color:var(--color-text-muted);">Masukkan angka tanpa titik atau koma pemisah</small>' +
+          '<small class="text-muted">Masukkan angka tanpa titik atau koma pemisah</small>' +
         '</div>'
       : '') +
       '<div class="form-group">' +
         '<label>Ikon</label>' +
-        '<div style="display:flex;gap:8px;align-items:center;">' +
-          '<span style="font-size:22px;"><i class="ti ti-' + (d.ikon || 'wallet') + '" id="fd-ikon-preview"></i></span>' +
-          '<select id="fd-ikon" style="flex:1;">' +
+        '<div class="input-group">' +
+          '<span class="icon-preview"><i class="ti ti-' + (d.ikon || 'wallet') + '" id="fd-ikon-preview"></i></span>' +
+          '<select id="fd-ikon" class="flex-1">' +
             buildIconOptions(d.ikon || 'wallet') +
           '</select>' +
         '</div>' +
       '</div>' +
       '<div class="form-group">' +
         '<label>Warna</label>' +
-        '<div style="display:flex;gap:8px;">' +
-          '<input type="color" id="fd-warna-picker" value="' + (d.warna || '#206bc4') + '" style="width:48px;padding:4px;">' +
-          '<input type="text" id="fd-warna" value="' + (d.warna || '#206bc4') + '" placeholder="#206bc4" style="flex:1;">' +
+        '<div class="input-group">' +
+          '<input type="color" id="fd-warna-picker" value="' + (d.warna || '#206bc4') + '" class="color-picker">' +
+          '<input type="text" id="fd-warna" value="' + (d.warna || '#206bc4') + '" placeholder="#206bc4" class="flex-1">' +
         '</div>' +
       '</div>' +
     '</form>';
@@ -110,7 +110,7 @@ async function _dompetSubmit(id, btn) {
   var originalText = btn ? btn.innerHTML : '';
   if (btn) {
     btn.disabled = true;
-    btn.innerHTML = '<span class="spinner" style="width:16px;height:16px;border-width:2px;"></span> Menyimpan...';
+    btn.innerHTML = '<span class="spinner spinner-sm"></span> Menyimpan...';
   }
 
   try {
@@ -163,8 +163,8 @@ async function renderDompet() {
       '<button class="btn btn-primary" id="dompet-tambah-btn"><i class="ti ti-plus"></i> <span class="btn-text">Tambah Dompet</span></button>' +
     '</div>' +
     '<div id="dompet-grid" class="grid-3"></div>' +
-    '<div style="margin-top:40px;">' +
-      '<h3 style="font-size:18px;font-weight:600;margin-bottom:16px;"><i class="ti ti-history me-2"></i>Riwayat Aktivitas</h3>' +
+    '<div class="section-spacer">' +
+      '<h3 class="section-header"><i class="ti ti-history me-2"></i>Riwayat Aktivitas</h3>' +
       '<div id="dompet-activity-log"></div>' +
     '</div>';
 
@@ -178,7 +178,7 @@ async function renderDompet() {
     if (!res || !res.success) {
       hidePageLoader();
       showToast((res && res.error) || 'Gagal memuat dompet', 'error');
-      document.getElementById('dompet-grid').innerHTML = '<div style="color:var(--color-danger);">Gagal memuat dompet.</div>';
+      document.getElementById('dompet-grid').innerHTML = '<div class="error-message">Gagal memuat dompet.</div>';
       return;
     }
 
@@ -193,7 +193,7 @@ async function renderDompet() {
       _dompetState.activities = activityRes.data || [];
       _dompetRenderActivityLog();
     } else {
-      document.getElementById('dompet-activity-log').innerHTML = '<div style="color:var(--color-text-muted);padding:20px;text-align:center;">Tidak ada riwayat aktivitas</div>';
+      document.getElementById('dompet-activity-log').innerHTML = '<div class="empty-message">Tidak ada riwayat aktivitas</div>';
     }
   } catch (e) {
     hidePageLoader();
@@ -235,22 +235,22 @@ function _dompetRenderActivityLog() {
   if (!container) return;
 
   if (!_dompetState.activities || !_dompetState.activities.length) {
-    container.innerHTML = '<div style="color:var(--color-text-muted);padding:20px;text-align:center;">Belum ada aktivitas</div>';
+    container.innerHTML = '<div class="empty-message">Belum ada aktivitas</div>';
     return;
   }
 
-  var tableHtml = '<div class="glass-card" style="padding:0;overflow:hidden;">' +
-    '<div style="overflow-x:auto;">' +
-      '<table style="width:100%;border-collapse:collapse;">' +
+  var tableHtml = '<div class="glass-card p-0 overflow-hidden">' +
+    '<div class="overflow-x-auto">' +
+      '<table class="activity-table">' +
         '<thead>' +
-          '<tr style="background:var(--color-bg-secondary);border-bottom:1px solid var(--color-border);">' +
-            '<th style="padding:12px;text-align:left;font-size:12px;font-weight:600;color:var(--color-text-muted);">Waktu</th>' +
-            '<th style="padding:12px;text-align:left;font-size:12px;font-weight:600;color:var(--color-text-muted);">Aktivitas</th>' +
-            '<th style="padding:12px;text-align:left;font-size:12px;font-weight:600;color:var(--color-text-muted);">Dompet</th>' +
-            '<th style="padding:12px;text-align:right;font-size:12px;font-weight:600;color:var(--color-text-muted);">Perubahan</th>' +
-            '<th style="padding:12px;text-align:right;font-size:12px;font-weight:600;color:var(--color-text-muted);">Saldo Sebelum</th>' +
-            '<th style="padding:12px;text-align:right;font-size:12px;font-weight:600;color:var(--color-text-muted);">Saldo Sesudah</th>' +
-            '<th style="padding:12px;text-align:left;font-size:12px;font-weight:600;color:var(--color-text-muted);">Keterangan</th>' +
+          '<tr>' +
+            '<th>Waktu</th>' +
+            '<th>Aktivitas</th>' +
+            '<th>Dompet</th>' +
+            '<th class="text-end">Perubahan</th>' +
+            '<th class="text-end">Saldo Sebelum</th>' +
+            '<th class="text-end">Saldo Sesudah</th>' +
+            '<th>Keterangan</th>' +
           '</tr>' +
         '</thead>' +
         '<tbody>';
@@ -282,10 +282,10 @@ function _dompetRenderActivityLog() {
     var perubahanStr = '';
     if (activity.perubahanSaldo !== 0) {
       var sign = activity.perubahanSaldo > 0 ? '+' : '';
-      var color = activity.perubahanSaldo > 0 ? '#2fb344' : '#d63939';
-      perubahanStr = '<span style="color:' + color + ';font-weight:600;">' + sign + formatCurrency(activity.perubahanSaldo) + '</span>';
+      var colorClass = activity.perubahanSaldo > 0 ? 'text-success' : 'text-danger';
+      perubahanStr = '<span class="' + colorClass + ' fw-semibold">' + sign + formatCurrency(activity.perubahanSaldo) + '</span>';
     } else {
-      perubahanStr = '<span style="color:var(--color-text-muted);">-</span>';
+      perubahanStr = '<span class="text-muted">-</span>';
     }
 
     var keterangan = activity.keterangan || '';
@@ -293,21 +293,21 @@ function _dompetRenderActivityLog() {
       keterangan = keterangan || (activity.aktivitas === 'Transfer Masuk' ? 'Dari ' + activity.dompetTerkaitNama : 'Ke ' + activity.dompetTerkaitNama);
     }
 
-    tableHtml += '<tr style="border-bottom:1px solid var(--color-border);">' +
-      '<td style="padding:12px;font-size:13px;white-space:nowrap;">' + timeStr + '</td>' +
-      '<td style="padding:12px;">' +
-        '<div style="display:flex;align-items:center;gap:8px;">' +
-          '<span style="width:28px;height:28px;border-radius:6px;background:' + aktivitasColor + '22;color:' + aktivitasColor + ';display:flex;align-items:center;justify-content:center;font-size:14px;">' +
+    tableHtml += '<tr>' +
+      '<td class="nowrap">' + timeStr + '</td>' +
+      '<td>' +
+        '<div class="d-flex align-items-center gap-2">' +
+          '<span class="activity-icon" style="background:' + aktivitasColor + '22;color:' + aktivitasColor + ';">' +
             '<i class="ti ti-' + aktivitasIcon + '"></i>' +
           '</span>' +
-          '<span style="font-size:13px;font-weight:500;">' + activity.aktivitas + '</span>' +
+          '<span class="fw-medium">' + activity.aktivitas + '</span>' +
         '</div>' +
       '</td>' +
-      '<td style="padding:12px;font-size:13px;">' + escapeHTML(activity.dompetNama) + '</td>' +
-      '<td style="padding:12px;text-align:right;font-size:13px;">' + perubahanStr + '</td>' +
-      '<td style="padding:12px;text-align:right;font-size:13px;color:var(--color-text-muted);">' + formatCurrency(activity.saldoSebelum) + '</td>' +
-      '<td style="padding:12px;text-align:right;font-size:13px;font-weight:600;">' + formatCurrency(activity.saldoSesudah) + '</td>' +
-      '<td style="padding:12px;font-size:13px;color:var(--color-text-muted);">' + escapeHTML(keterangan || '-') + '</td>' +
+      '<td>' + escapeHTML(activity.dompetNama) + '</td>' +
+      '<td class="text-end">' + perubahanStr + '</td>' +
+      '<td class="text-end text-muted">' + formatCurrency(activity.saldoSebelum) + '</td>' +
+      '<td class="text-end fw-semibold">' + formatCurrency(activity.saldoSesudah) + '</td>' +
+      '<td class="text-muted">' + escapeHTML(keterangan || '-') + '</td>' +
     '</tr>';
   });
 

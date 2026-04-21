@@ -137,12 +137,12 @@ function renderDashboard() {
               '<span class="fw-bold">Anggaran tersedia</span>' +
               '<span class="fw-bold">' + formatCurrency(sisaAnggaran < 0 ? 0 : sisaAnggaran) + '</span>' +
             '</div>' +
-            '<div class="progress mb-2" style="height: 8px;">' +
-              '<div class="progress-bar" style="width:' + availabilityPercent + '%;background:#206bc4;border-radius:999px;"></div>' +
+            '<div class="progress mb-2 progress-md">' +
+              '<div class="progress-bar text-primary-custom" style="width:' + availabilityPercent + '%;"></div>' +
             '</div>' +
             '<div class="d-flex justify-content-between align-items-center">' +
               '<span class="text-muted small">Persentase dana yang masih bisa dipakai</span>' +
-              '<span class="fw-semibold" style="color:#206bc4;">' + availabilityPercent.toFixed(1).replace('.', ',') + '%</span>' +
+              '<span class="fw-semibold text-primary-custom">' + availabilityPercent.toFixed(1).replace('.', ',') + '%</span>' +
             '</div>' +
           '</div>' +
         '</div>' +
@@ -150,7 +150,7 @@ function renderDashboard() {
         '<div class="glass-card p-3">' +
           '<div class="fw-semibold mb-2"><i class="ti ti-chart-line me-1"></i>Pengeluaran Mingguan</div>' +
           (weeklyData.length
-            ? '<div style="position:relative;height:220px;"><canvas id="line-chart"></canvas></div>'
+            ? '<div class="chart-container"><canvas id="line-chart"></canvas></div>'
             : '<div class="text-muted text-center py-4">Belum ada data.</div>') +
         '</div>' +
       '</div>';

@@ -24,17 +24,17 @@ function _kategoriBadgeJenis(jenis) {
 function _kategoriBuildCard(k) {
   var warna = k.warna || '#206bc4';
   var ikon  = k.ikon  || 'tag';
-  return '<div class="glass-card" style="padding:20px;position:relative;">' +
-    '<div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">' +
-      '<span style="width:40px;height:40px;border-radius:10px;background:' + warna + '22;color:' + warna + ';display:flex;align-items:center;justify-content:center;font-size:20px;">' +
+  return '<div class="glass-card p-4 position-relative">' +
+    '<div class="card-header-row">' +
+      '<span class="card-icon" style="background:' + warna + '22;color:' + warna + ';">' +
         '<i class="ti ti-' + ikon + '"></i>' +
       '</span>' +
-      '<span style="font-weight:600;font-size:15px;flex:1;">' + escapeHTML(k.nama) + '</span>' +
+      '<span class="card-title">' + escapeHTML(k.nama) + '</span>' +
     '</div>' +
-    '<div style="margin-bottom:14px;">' + _kategoriBadgeJenis(k.jenis) + '</div>' +
-    '<div style="display:flex;gap:8px;">' +
-      '<button class="btn btn-sm" data-action="edit" data-id="' + k.id + '" style="flex:1;"><i class="ti ti-edit"></i> Edit</button>' +
-      '<button class="btn btn-sm btn-danger" data-action="delete" data-id="' + k.id + '" style="flex:1;"><i class="ti ti-trash"></i> Hapus</button>' +
+    '<div class="mb-3">' + _kategoriBadgeJenis(k.jenis) + '</div>' +
+    '<div class="card-actions">' +
+      '<button class="btn btn-sm" data-action="edit" data-id="' + k.id + '"><i class="ti ti-edit"></i> Edit</button>' +
+      '<button class="btn btn-sm btn-danger" data-action="delete" data-id="' + k.id + '"><i class="ti ti-trash"></i> Hapus</button>' +
     '</div>' +
   '</div>';
 }
@@ -62,18 +62,18 @@ function _kategoriOpenForm(kategori) {
       '</div>' +
       '<div class="form-group">' +
         '<label>Ikon</label>' +
-        '<div style="display:flex;gap:8px;align-items:center;">' +
-          '<span style="font-size:22px;"><i class="ti ti-' + (k.ikon || 'tag') + '" id="fk-ikon-preview"></i></span>' +
-          '<select id="fk-ikon" style="flex:1;">' +
+        '<div class="input-group">' +
+          '<span class="icon-preview"><i class="ti ti-' + (k.ikon || 'tag') + '" id="fk-ikon-preview"></i></span>' +
+          '<select id="fk-ikon" class="flex-1">' +
             buildIconOptions(k.ikon || 'tag') +
           '</select>' +
         '</div>' +
       '</div>' +
       '<div class="form-group">' +
         '<label>Warna</label>' +
-        '<div style="display:flex;gap:8px;">' +
-          '<input type="color" id="fk-warna-picker" value="' + (k.warna || '#206bc4') + '" style="width:48px;padding:4px;">' +
-          '<input type="text" id="fk-warna" value="' + (k.warna || '#206bc4') + '" placeholder="#206bc4" style="flex:1;">' +
+        '<div class="input-group">' +
+          '<input type="color" id="fk-warna-picker" value="' + (k.warna || '#206bc4') + '" class="color-picker">' +
+          '<input type="text" id="fk-warna" value="' + (k.warna || '#206bc4') + '" placeholder="#206bc4" class="flex-1">' +
         '</div>' +
       '</div>' +
     '</form>';
@@ -121,7 +121,7 @@ async function _kategoriSubmit(id, btn) {
   var originalText = btn ? btn.innerHTML : '';
   if (btn) {
     btn.disabled = true;
-    btn.innerHTML = '<span class="spinner" style="width:16px;height:16px;border-width:2px;"></span> Menyimpan...';
+    btn.innerHTML = '<span class="spinner spinner-sm"></span> Menyimpan...';
   }
 
   try {
@@ -185,7 +185,7 @@ async function renderKategori() {
     hidePageLoader();
     if (!res || !res.success) {
       showToast((res && res.error) || 'Gagal memuat kategori', 'error');
-      document.getElementById('kategori-grid').innerHTML = '<div style="color:var(--color-danger);">Gagal memuat kategori.</div>';
+      document.getElementById('kategori-grid').innerHTML = '<div class="error-message">Gagal memuat kategori.</div>';
       return;
     }
 

@@ -66,7 +66,7 @@ function renderLoginPage() {
     var submitBtn = document.getElementById('login-submit-btn');
     submitBtn.disabled = true;
     submitBtn.innerHTML =
-      '<span class="spinner" style="width:16px;height:16px;border-width:2px;"></span>' +
+      '<span class="spinner spinner-sm"></span>' +
       '<span>Memverifikasi...</span>';
 
     callBackend('login', password).then(function(res) {
