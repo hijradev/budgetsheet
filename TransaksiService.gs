@@ -243,11 +243,42 @@ var TransaksiService = {
     // Terapkan perubahan saldo
     var deltas = TransaksiService.hitungDeltaSaldo(data.jenis, jumlah, data.dompetAsalId, data.dompetTujuanId);
     var warning;
+    var DompetActivityService = deps.DompetActivityService;
+
+    // Untuk transfer, kita perlu nama dompet
+    var dompetAsalNama = '';
+    var dompetTujuanNama = '';
+    if (data.jenis === 'Transfer' && DompetActivityService) {
+      var dompetList = DompetService.getDompet(deps);
+      for (var i = 0; i < dompetList.length; i++) {
+        if (dompetList[i].id === data.dompetAsalId) {
+          dompetAsalNama = dompetList[i].nama;
+        }
+        if (dompetList[i].id === data.dompetTujuanId) {
+          dompetTujuanNama = dompetList[i].nama;
+        }
+      }
+    }
 
     for (var i = 0; i < deltas.length; i++) {
       var dompetId = deltas[i].id;
       var delta    = deltas[i].delta;
-      var updatedDompet = DompetService.updateSaldoDompet(dompetId, delta, deps);
+      
+      // Untuk transfer, kirim info dompet terkait
+      var options = {};
+      if (data.jenis === 'Transfer') {
+        if (dompetId === data.dompetAsalId) {
+          options.dompetTerkaitId = data.dompetTujuanId;
+          options.dompetTerkaitNama = dompetTujuanNama;
+          options.keterangan = 'Transfer ke ' + dompetTujuanNama + (data.catatan ? ': ' + data.catatan : '');
+        } else {
+          options.dompetTerkaitId = data.dompetAsalId;
+          options.dompetTerkaitNama = dompetAsalNama;
+          options.keterangan = 'Transfer dari ' + dompetAsalNama + (data.catatan ? ': ' + data.catatan : '');
+        }
+      }
+      
+      var updatedDompet = DompetService.updateSaldoDompet(dompetId, delta, deps, options);
       // Peringatan jika pengeluaran menyebabkan saldo negatif
       if (data.jenis === 'Pengeluaran' && updatedDompet.SaldoSaatIni < 0) {
         warning = 'Saldo dompet tidak mencukupi. Transaksi tetap disimpan.';

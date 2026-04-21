@@ -72,6 +72,17 @@ function renderPengaturan() {
           '</div>' +
         '</div>' +
 
+        // Migration card
+        '<div class="col-12">' +
+          '<div class="glass-card p-3">' +
+            '<div class="fw-semibold mb-2"><i class="ti ti-database-import me-1"></i>Migrasi Database</div>' +
+            '<p class="text-muted small mb-3">Jalankan migrasi untuk menambahkan fitur baru ke spreadsheet Anda (seperti log aktivitas dompet).</p>' +
+            '<button class="btn btn-secondary" id="btn-run-migration">' +
+              '<i class="ti ti-database-import me-1"></i>Jalankan Migrasi' +
+            '</button>' +
+          '</div>' +
+        '</div>' +
+
         // Logout card
         '<div class="col-12">' +
           '<div class="glass-card p-3">' +
@@ -94,6 +105,11 @@ function renderPengaturan() {
   document.getElementById('btn-simpan-password').addEventListener('click', function(e) {
     e.preventDefault();
     _submitGantiPassword();
+  });
+
+  // Migration
+  document.getElementById('btn-run-migration').addEventListener('click', function() {
+    _runMigration();
   });
 
   // Logout
@@ -131,6 +147,29 @@ function _submitGantiPassword() {
     showToast('Fitur ubah password belum tersedia', 'warning');
   }).finally(function() {
     if (btn) { btn.disabled = false; btn.innerHTML = '<i class="ti ti-check me-1"></i>Simpan Password'; }
+  });
+}
+
+function _runMigration() {
+  var btn = document.getElementById('btn-run-migration');
+  if (btn) { 
+    btn.disabled = true; 
+    btn.innerHTML = '<span class="spinner" style="width:16px;height:16px;border-width:2px;"></span> Menjalankan...';
+  }
+
+  callBackend('runMigration', getToken()).then(function(res) {
+    if (res && res.success) {
+      showToast(res.message || 'Migrasi berhasil', 'success');
+    } else {
+      showToast(res.message || 'Migrasi gagal', 'error');
+    }
+  }).catch(function(e) {
+    showToast('Gagal menjalankan migrasi', 'error');
+  }).finally(function() {
+    if (btn) { 
+      btn.disabled = false; 
+      btn.innerHTML = '<i class="ti ti-database-import me-1"></i>Jalankan Migrasi';
+    }
   });
 }
 

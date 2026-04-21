@@ -43,6 +43,7 @@ function setupApp(deps) {
       { name: SHEET_KATEGORI,  headers: KATEGORI_HEADERS  },
       { name: SHEET_ANGGARAN,  headers: ANGGARAN_HEADERS  },
       { name: SHEET_LANGGANAN, headers: LANGGANAN_HEADERS },
+      { name: SHEET_DOMPET_ACTIVITY, headers: DOMPET_ACTIVITY_HEADERS },
     ];
 
     sheetDefs.forEach(function(def, index) {

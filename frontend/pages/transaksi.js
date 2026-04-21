@@ -90,7 +90,8 @@ async function _trxOpenForm(trx) {
       '</div>' +
       '<div class="form-group">' +
         '<label>Jumlah (Rp)</label>' +
-        '<input type="number" id="ft-jumlah" min="1" value="' + (t.jumlah || '') + '" required>' +
+        '<input type="number" id="ft-jumlah" min="1" value="' + (t.jumlah || '') + '" required placeholder="Contoh: 50000">' +
+        '<small style="color:var(--color-text-muted);">Masukkan angka tanpa titik atau koma pemisah</small>' +
       '</div>' +
       '<div class="form-group">' +
         '<label>Kategori</label>' +
@@ -137,11 +138,11 @@ async function _trxOpenForm(trx) {
   toggleTujuan();
 
   document.getElementById('ft-simpan-btn').addEventListener('click', function() {
-    _trxSubmit(isEdit ? t.id : null);
+    _trxSubmit(isEdit ? t.id : null, this);
   });
 }
 
-async function _trxSubmit(id) {
+async function _trxSubmit(id, btn) {
   var tanggal      = document.getElementById('ft-tanggal').value;
   var jenis        = document.getElementById('ft-jenis').value;
   var jumlah       = parseFloat(document.getElementById('ft-jumlah').value);
@@ -165,10 +166,17 @@ async function _trxSubmit(id) {
 
   var data = { id: id, tanggal: tanggal, jenis: jenis, jumlah: jumlah, kategoriId: kategoriId, dompetAsalId: dompetAsalId, dompetTujuanId: dompetTujuanId, catatan: catatan };
 
-  closeModal();
+  // Immediate loading feedback
+  var originalText = btn ? btn.innerHTML : '';
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner" style="width:16px;height:16px;border-width:2px;"></span> Menyimpan...';
+  }
+
   try {
     var res = await callBackend('saveTransaksi', data, getToken());
     if (res && res.success) {
+      closeModal();
       showToast(id ? 'Transaksi diperbarui' : 'Transaksi disimpan', 'success');
       AppCache.invalidate('dompet');
       renderTransaksi();
@@ -177,6 +185,8 @@ async function _trxSubmit(id) {
     }
   } catch (e) {
     showToast('Gagal terhubung ke server', 'error');
+  } finally {
+    if (btn) { btn.disabled = false; btn.innerHTML = originalText; }
   }
 }
 
@@ -258,6 +268,7 @@ function _trxRenderList() {
 async function _trxDelete(id) {
   var ok = await confirmModal('Hapus transaksi ini?');
   if (!ok) return;
+  showPageLoader();
   try {
     var res = await callBackend('deleteTransaksi', id, getToken());
     if (res && res.success) {
@@ -265,9 +276,11 @@ async function _trxDelete(id) {
       AppCache.invalidate('dompet');
       renderTransaksi();
     } else {
+      hidePageLoader();
       showToast((res && res.error) || 'Gagal menghapus', 'error');
     }
   } catch (e) {
+    hidePageLoader();
     showToast('Gagal terhubung ke server', 'error');
   }
 }

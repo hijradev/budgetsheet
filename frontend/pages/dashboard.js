@@ -30,22 +30,30 @@ function _buildLanggananItem(l) {
   hariIni.setHours(0, 0, 0, 0);
   var selisihHari = Math.ceil((jatuhTempo - hariIni) / (1000 * 60 * 60 * 24));
   var isWarning = selisihHari <= 3;
+  var isNonaktif = l.status === 'Nonaktif';
 
-  return '<div class="d-flex align-items-center justify-content-between py-2 border-bottom">' +
-    '<div class="d-flex align-items-center gap-2">' +
-      '<span class="badge ' + (isWarning ? 'bg-warning' : 'bg-blue') + ' badge-pill" style="width:10px;height:10px;padding:0;border-radius:50%;"></span>' +
-      '<div>' +
-        '<div class="fw-medium">' + (l.nama || '-') + '</div>' +
-        '<div class="text-muted small">' + formatDate(l.tanggalJatuhTempo) + '</div>' +
-      '</div>' +
-    '</div>' +
-    '<div class="text-end">' +
-      '<div class="fw-bold' + (isWarning ? ' text-warning' : '') + '">' + formatCurrency(l.jumlah) + '</div>' +
-      (isWarning
-        ? '<div class="text-warning small">' + (selisihHari <= 0 ? 'Jatuh tempo hari ini!' : selisihHari + ' hari lagi') + '</div>'
-        : '') +
-    '</div>' +
-  '</div>';
+  var statusBadge;
+  if (isNonaktif) {
+    statusBadge = '<span class="badge badge-muted">Nonaktif</span>';
+  } else if (isWarning) {
+    statusBadge = '<span class="badge badge-warning">' +
+      (selisihHari <= 0 ? 'Jatuh Tempo!' : selisihHari + ' hari lagi') + '</span>';
+  } else {
+    statusBadge = '<span class="badge badge-success">Aktif</span>';
+  }
+
+  return '<tr' + (isWarning && !isNonaktif ? ' class="table-warning"' : '') + '>' +
+    '<td>' +
+      (isWarning && !isNonaktif ? '<i class="ti ti-alert-triangle text-warning me-1"></i>' : '') +
+      (l.nama || '—') +
+    '</td>' +
+    '<td class="fw-semibold text-danger">' + formatCurrency(l.jumlah) + '</td>' +
+    '<td>' + (l.kategoriNama || l.kategoriId || '—') + '</td>' +
+    '<td>' + (l.dompetNama || l.dompetId || '—') + '</td>' +
+    '<td>' + (l.frekuensi || '—') + '</td>' +
+    '<td>' + formatDate(l.tanggalJatuhTempo) + '</td>' +
+    '<td>' + statusBadge + '</td>' +
+  '</tr>';
 }
 
 // ---------------------------------------------------------------------------
@@ -99,7 +107,7 @@ function renderDashboard() {
         _statCard('ti-arrow-down-circle', 'Pemasukan Bulan Ini',   formatCurrency(totalPemasukan),   'success') +
         _statCard('ti-arrow-up-circle',   'Pengeluaran Bulan Ini', formatCurrency(totalPengeluaran), 'danger') +
         _statCard('ti-chart-pie',         'Total Anggaran',        formatCurrency(totalAnggaran),    'warning') +
-        _statCard('ti-chart-bar',         'Anggaran Terpakai',     formatCurrency(totalPengeluaran), budgetUsageColor) +
+        _statCard('ti-chart-bar',         'Anggaran Terpakai',     formatCurrency(totalPengeluaran), 'primary') +
       '</div>';
 
     // -----------------------------------------------------------------------
@@ -175,12 +183,23 @@ function renderDashboard() {
     // -----------------------------------------------------------------------
     var langgananItems = langganan.length
       ? langganan.map(_buildLanggananItem).join('')
-      : '<div class="text-muted text-center py-3">Tidak ada tagihan dalam 7 hari ke depan.</div>';
+      : '<tr><td colspan="7" class="text-muted text-center py-3">Tidak ada tagihan dalam 7 hari ke depan.</td></tr>';
 
     var langgananHtml =
       '<div class="glass-card mb-4">' +
-        '<div class="p-3 border-bottom fw-semibold"><i class="ti ti-bell me-1"></i>Langganan Jatuh Tempo</div>' +
-        '<div class="p-3">' + langgananItems + '</div>' +
+        '<div class="d-flex align-items-center justify-content-between p-3 border-bottom flex-wrap gap-2">' +
+          '<div class="fw-semibold"><i class="ti ti-bell me-1"></i>Langganan Jatuh Tempo</div>' +
+          '<a href="#/langganan" class="btn btn-sm btn-outline-primary"><span class="btn-text">Lihat Semua</span><i class="ti ti-arrow-right d-md-none"></i></a>' +
+        '</div>' +
+        '<div class="table-responsive">' +
+          '<table class="table table-sm mb-0">' +
+            '<thead><tr>' +
+              '<th>Nama</th><th>Jumlah</th><th>Kategori</th><th>Dompet</th>' +
+              '<th>Frekuensi</th><th>Jatuh Tempo</th><th>Status</th>' +
+            '</tr></thead>' +
+            '<tbody>' + langgananItems + '</tbody>' +
+          '</table>' +
+        '</div>' +
       '</div>';
 
     // -----------------------------------------------------------------------

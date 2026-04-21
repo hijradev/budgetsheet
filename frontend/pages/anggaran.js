@@ -90,7 +90,8 @@ function _bukaFormAnggaran(anggaran) {
         '<div class="mb-3">' +
           '<label class="form-label">Jumlah Anggaran (Rp)</label>' +
           '<input type="number" class="form-control" id="f-anggaran-jumlah" min="1" ' +
-            'value="' + (a.jumlahAnggaran || '') + '" required>' +
+            'value="' + (a.jumlahAnggaran || '') + '" required placeholder="Contoh: 500000">' +
+          '<div class="form-text">Masukkan angka tanpa titik atau koma pemisah</div>' +
         '</div>' +
         '<div class="mb-3">' +
           '<label class="form-label">Periode</label>' +
@@ -134,12 +135,12 @@ function _bukaFormAnggaran(anggaran) {
 
     document.getElementById('btn-batal-anggaran').addEventListener('click', closeModal);
     document.getElementById('btn-simpan-anggaran').addEventListener('click', function() {
-      _submitFormAnggaran(isEdit ? a.id : null);
+      _submitFormAnggaran(isEdit ? a.id : null, this);
     });
   });
 }
 
-function _submitFormAnggaran(id) {
+function _submitFormAnggaran(id, btn) {
   var kategoriId     = document.getElementById('f-anggaran-kategori').value;
   var jumlahAnggaran = parseFloat(document.getElementById('f-anggaran-jumlah').value);
   var periode        = document.getElementById('f-anggaran-periode').value;
@@ -154,9 +155,16 @@ function _submitFormAnggaran(id) {
 
   var data = { id: id, kategoriId: kategoriId, jumlahAnggaran: jumlahAnggaran, periode: periode, bulan: bulan, tahun: tahun };
 
-  closeModal();
+  // Immediate loading feedback
+  var originalText = btn ? btn.innerHTML : '';
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner" style="width:16px;height:16px;border-width:2px;"></span> Menyimpan...';
+  }
+
   callBackend('saveAnggaran', data, getToken()).then(function(res) {
     if (res && res.success) {
+      closeModal();
       showToast(id ? 'Anggaran berhasil diperbarui' : 'Anggaran berhasil ditambahkan', 'success');
       renderAnggaran();
     } else {
@@ -164,19 +172,24 @@ function _submitFormAnggaran(id) {
     }
   }).catch(function() {
     showToast('Gagal terhubung ke server', 'error');
+  }).finally(function() {
+    if (btn) { btn.disabled = false; btn.innerHTML = originalText; }
   });
 }
 
 function _hapusAnggaran(id) {
   if (!confirm('Hapus anggaran ini?')) return;
+  showPageLoader();
   callBackend('deleteAnggaran', id, getToken()).then(function(res) {
     if (res && res.success) {
       showToast('Anggaran berhasil dihapus', 'success');
       renderAnggaran();
     } else {
+      hidePageLoader();
       showToast((res && res.error) || 'Gagal menghapus anggaran', 'error');
     }
   }).catch(function() {
+    hidePageLoader();
     showToast('Gagal terhubung ke server', 'error');
   });
 }
